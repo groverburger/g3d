@@ -1,2 +1,2 @@
-# ss3d v1.2
+# Super Simple 3D Engine v1.2
 by groverburger
