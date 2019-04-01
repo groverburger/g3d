@@ -1,6 +1,7 @@
 # Super Simple 3D Engine v1.2
 
 groverburger's Super Simple 3D Engine (SS3D) is my take on simplifying LÖVE 11's new 3D capabilities into a ready-to-use library for simple 3D games.
+
 ![pic1](image.png)
 
 ### Features:
