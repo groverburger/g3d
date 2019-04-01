@@ -90,3 +90,5 @@ That's the basics!
 The given main.lua runs the demo provided with SS3D and provides a useful code example.
 I can take some questions on the main forum thread:
 https://love2d.org/forums/viewtopic.php?f=5&t=86350
+
+This code is offered under the MIT license, so feel free to use this engine in whatever you want. No credit necessary.
