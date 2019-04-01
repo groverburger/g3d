@@ -30,7 +30,7 @@ function engine.newModel(verts, texture, coords, color, format)
     if texture == nil then
         texture = love.graphics.newCanvas(1,1)
         love.graphics.setCanvas(texture)
-        love.graphics.clear(unpack(color))
+        love.graphics.clear(0,0,0)
         love.graphics.setCanvas()
     end
     if verts == nil then
@@ -218,11 +218,13 @@ function engine.newScene(renderWidth,renderHeight)
     scene.ambientLight = 0.25
     scene.ambientVector = {0,1,0}
 
+    -- returns a reference to the model
     scene.addModel = function (self, model)
         table.insert(self.modelList, model)
         return model
     end
 
+    -- finds and removes model, returns boolean if successful
     scene.removeModel = function (self, model)
         local i = 1
 
@@ -238,6 +240,7 @@ function engine.newScene(renderWidth,renderHeight)
         return false
     end
 
+    -- resize output canvas to given dimensions
     scene.resize = function (self, renderWidth, renderHeight)
         self.renderWidth = renderWidth
         self.renderHeight = renderHeight
