@@ -18,61 +18,9 @@ function love.load()
     Scene.camera.pos.x = 0
     Scene.camera.pos.z = 5
 
-    -- define vertices to be used in the creation of a new Model object for the Scene
-    local cubeVerts = {}
-    -- front
-    cubeVerts[#cubeVerts+1] = {-1,-1,-1, 0,0}
-    cubeVerts[#cubeVerts+1] = {1,-1,-1, 1,0}
-    cubeVerts[#cubeVerts+1] = {-1,1,-1, 0,1}
-    cubeVerts[#cubeVerts+1] = {1,1,-1, 1,1}
-    cubeVerts[#cubeVerts+1] = {-1,1,-1, 0,1}
-    cubeVerts[#cubeVerts+1] = {1,-1,-1, 1,0}
-
-    -- back
-    cubeVerts[#cubeVerts+1] = {1,-1,1, 1,0}
-    cubeVerts[#cubeVerts+1] = {-1,-1,1, 0,0}
-    cubeVerts[#cubeVerts+1] = {-1,1,1, 0,1}
-    cubeVerts[#cubeVerts+1] = {-1,1,1, 0,1}
-    cubeVerts[#cubeVerts+1] = {1,1,1, 1,1}
-    cubeVerts[#cubeVerts+1] = {1,-1,1, 1,0}
-
-    -- right side
-    cubeVerts[#cubeVerts+1] = {-1,-1,1, 1,0}
-    cubeVerts[#cubeVerts+1] = {-1,-1,-1, 0,0}
-    cubeVerts[#cubeVerts+1] = {-1,1,-1, 0,1}
-    cubeVerts[#cubeVerts+1] = {-1,1,-1, 0,1}
-    cubeVerts[#cubeVerts+1] = {-1,1,1, 1,1}
-    cubeVerts[#cubeVerts+1] = {-1,-1,1, 1,0}
-
-    -- left side
-    cubeVerts[#cubeVerts+1] = {1,-1,-1, 0,0}
-    cubeVerts[#cubeVerts+1] = {1,-1,1, 1,0}
-    cubeVerts[#cubeVerts+1] = {1,1,-1, 0,1}
-    cubeVerts[#cubeVerts+1] = {1,1,1, 1,1}
-    cubeVerts[#cubeVerts+1] = {1,1,-1, 0,1}
-    cubeVerts[#cubeVerts+1] = {1,-1,1, 1,0}
-
-    -- top side
-    cubeVerts[#cubeVerts+1] = {-1,1,-1, 0,0}
-    cubeVerts[#cubeVerts+1] = {1,1,-1, 1,0}
-    cubeVerts[#cubeVerts+1] = {-1,1,1, 0,1}
-    cubeVerts[#cubeVerts+1] = {1,1,1, 1,1}
-    cubeVerts[#cubeVerts+1] = {-1,1,1, 0,1}
-    cubeVerts[#cubeVerts+1] = {1,1,-1, 1,0}
-
-    -- bottom side
-    cubeVerts[#cubeVerts+1] = {1,-1,-1, 1,0}
-    cubeVerts[#cubeVerts+1] = {-1,-1,-1, 0,0}
-    cubeVerts[#cubeVerts+1] = {-1,-1,1, 0,1}
-    cubeVerts[#cubeVerts+1] = {-1,-1,1, 0,1}
-    cubeVerts[#cubeVerts+1] = {1,-1,1, 1,1}
-    cubeVerts[#cubeVerts+1] = {1,-1,-1, 1,0}
-
-    cubeVerts = Engine.loadObj("alakazam.obj")
-
     -- turn the vertices into a Model with a texture
-    CubeModel = Engine.newModel(cubeVerts, DefaultTexture)
-    Scene:addModel(CubeModel)
+    AlakazamModel = Engine.newModel(Engine.loadObj("alakazam.obj"), DefaultTexture)
+    Scene:addModel(AlakazamModel)
 
     local pyramidVerts = {}
     pyramidVerts[#pyramidVerts+1] = {-1,-1,-1}
@@ -118,9 +66,9 @@ function love.update(dt)
         return
     end
 
-    -- make the CubeModel go in circles and rotate
+    -- make the AlakazamModel go in circles and rotate
     Timer = Timer + dt/4
-    CubeModel:setTransform({0,-1.5,0}, {Timer, cpml.vec3.unit_y, Timer, cpml.vec3.unit_z, Timer, cpml.vec3.unit_x})
+    AlakazamModel:setTransform({0,-1.5,0}, {Timer, cpml.vec3.unit_y, Timer, cpml.vec3.unit_z, Timer, cpml.vec3.unit_x})
 
     for i=1, #Pyramids do
         Pyramids[i]:setTransform({math.cos(Timer +i*math.pi*0.5)*12, math.sin(Timer +i)*0.75 +1, math.sin(Timer +i*math.pi*0.5)*12}, {Timer, cpml.vec3.unit_y, Timer, cpml.vec3.unit_z, Timer, cpml.vec3.unit_x})
@@ -171,8 +119,12 @@ function love.draw()
     Scene:renderFunction(
         function ()
             love.graphics.setColor(0,0,0)
-            love.graphics.print("groverburger's super simple 3d engine v1.2")
+            love.graphics.print("groverburger's super simple 3d engine v1.3")
             love.graphics.print("FPS: "..love.timer.getFPS(),0,16)
+
+            if Paused then
+                love.graphics.print("PAUSED",0,32)
+            end
         end
     )
 end

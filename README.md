@@ -36,7 +36,9 @@ It's also recommended to set the mouse's relative mode to true, especially for f
 love.mouse.setRelativeMode(true)
 Scene = Engine.newScene(love.graphics.getWidth(), love.graphics.getHeight())
 ```
-Points must be defined in order to create model.
+Models can either be created via tables containing point definitions or importing .obj model files.
+
+Point definitions can be expressed as follows:
 ```lua
 -- define a tetrahedron model
 local tetrahedron = {
@@ -58,6 +60,11 @@ local tetrahedron = {
 }
 ```
 Each table inside the model defines a point in the model, with the indices being the x, y, and z coordinates respectively. Points can also optionally take in fourth and fifth indices, representing the u and v coordinates for a given texture. Every three points creates one triangle, and these triangles are used to build models.
+
+Point definitions can also be imported from .obj files like so:
+```lua
+AlakazamModel = Engine.newModel(Engine.loadObj("alakazam.obj"), DefaultTexture)
+```
 
 Once the vertices for a model have been defined, the model can now be instantiated and added to a Scene.
 An argument for a texture is optional. A texture is just a standard image created with love.graphics.newImage(). If left blank, it will default to pure black.
