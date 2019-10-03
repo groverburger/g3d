@@ -17,9 +17,8 @@ groverburger's Super Simple 3D Engine (SS3D) is my take on simplifying LÖVE 11'
 
 ### To Dos
 - Phong lighting
-- Obj file format import
-- Simple collision handling
-- Detailed wiki
+- Simple collision handling (coming soon!)
+- Wiki
 
 ### Installation
 Drag the engine.lua file into your project directory to install. SS3D does require CPML, which can be found [here](https://github.com/excessive/cpml). I've included the latest version of CPML which I have confirmed works without problems in this repository.
