@@ -4,7 +4,7 @@ Engine = require "engine"
 function love.load()
     -- make the mouse cursor locked to the screen
     love.mouse.setRelativeMode(true)
-    love.window.setTitle("ss3d 1.2 demo")
+    love.window.setTitle("ss3d 1.3 demo")
     love.window.setMode(1024, 1024*9/16, {})
     love.graphics.setBackgroundColor(0.52,0.57,0.69)
     Paused = false
@@ -67,6 +67,8 @@ function love.load()
     cubeVerts[#cubeVerts+1] = {-1,-1,1, 0,1}
     cubeVerts[#cubeVerts+1] = {1,-1,1, 1,1}
     cubeVerts[#cubeVerts+1] = {1,-1,-1, 1,0}
+
+    cubeVerts = Engine.loadObj("alakazam.obj")
 
     -- turn the vertices into a Model with a texture
     CubeModel = Engine.newModel(cubeVerts, DefaultTexture)

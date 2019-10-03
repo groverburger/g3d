@@ -2,8 +2,25 @@
 -- groverburger 2019
 
 cpml = require "cpml"
+Reader = require "reader"
 
 local engine = {}
+
+function engine.loadObj(objPath)
+    local obj = Reader.load(objPath)
+	local faces = {}
+	local verts = {}
+	
+	for i,v in pairs(obj.v) do
+			table.insert(verts, {v.x,v.y,v.z})
+	end
+	for i,v in pairs(obj.f) do
+			table.insert(faces, {verts[v[1].v][1], verts[v[1].v][2], verts[v[1].v][3], obj.vt[v[1].vt].u, obj.vt[v[1].vt].v})
+			table.insert(faces, {verts[v[2].v][1], verts[v[2].v][2], verts[v[2].v][3], obj.vt[v[2].vt].u, obj.vt[v[2].vt].v})
+			table.insert(faces, {verts[v[3].v][1], verts[v[3].v][2], verts[v[3].v][3], obj.vt[v[3].vt].u, obj.vt[v[3].vt].v})
+	end
+	return faces
+end
 
 -- create a new Model object
 -- given a table of verts for example: { {0,0,0}, {0,1,0}, {0,0,1} }
@@ -388,3 +405,4 @@ function MoveVerts(verts, sx,sy,sz)
 end
 
 return engine
+
