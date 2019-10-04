@@ -25,6 +25,7 @@ local insert = table.insert;
 local remove = table.remove;
 
 local ipairs = ipairs;
+local unpack = unpack;
 
 local newCanvas = love.graphics.newCanvas;
 local setCanvas = love.graphics.setCanvas;
@@ -32,6 +33,7 @@ local newMesh   = love.graphics.newMesh;
 local setColor  = love.graphics.setColor;
 local setShader = love.graphics.setShader;
 local clear     = love.graphics.clear;
+local draw      = love.graphics.draw;
 local setWireframe = love.graphics.setWireframe
 local setMeshCullMode = love.graphics.setMeshCullMode;
 
@@ -141,7 +143,7 @@ local engine = {
   ScaleVerts = ScaleVerts,
   MoveVerts = MoveVerts,
 }
-
+--
 function engine.loadObj(objPath)
   local obj = Reader.load(objPath)
 	local faces = {}
@@ -380,7 +382,7 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
                     setMeshCullMode("back")
                 end
 
-                love.graphics.draw(model.mesh, -renderWidth/2, -renderHeight/2)
+                draw(model.mesh, -renderWidth/2, -renderHeight/2)
 
                 setMeshCullMode("none")
                 setWireframe(false)
@@ -409,7 +411,7 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
         setCanvas()
 
         if useCanvases and drawArg ~= false then
-            love.graphics.draw(twoCanvas, renderWidth/2,renderHeight/2, 0, 1,1, renderWidth/2, renderHeight/2)
+          draw(twoCanvas, renderWidth/2,renderHeight/2, 0, 1,1, renderWidth/2, renderHeight/2)
         end
     end
 
