@@ -211,16 +211,16 @@ function engine.newModel(verts, texture, coords, color, format)
             local polysecond = polyindex +2
             local polythird  = polyindex +3
 
-            local sn1 = {}
-            sn1[1] = verts[polythird][1] - verts[polysecond][1]
-            sn1[2] = verts[polythird][2] - verts[polysecond][2]
-            sn1[3] = verts[polythird][3] - verts[polysecond][3]
-
-            local sn2 = {}
-            sn2[1] = verts[polysecond][1] - verts[polyfirst][1]
-            sn2[2] = verts[polysecond][2] - verts[polyfirst][2]
-            sn2[3] = verts[polysecond][3] - verts[polyfirst][3]
-
+            local sn1 = {
+              verts[polythird][1] - verts[polysecond][1],
+              verts[polythird][2] - verts[polysecond][2],
+              verts[polythird][3] - verts[polysecond][3]
+            }
+            local sn2 = {
+              verts[polysecond][1] - verts[polyfirst][1],
+              verts[polysecond][2] - verts[polyfirst][2],
+              verts[polysecond][3] - verts[polyfirst][3]
+            }
             local cross = UnitVectorOf(CrossProduct(sn1,sn2))
 
             vert[6] = cross[1]
