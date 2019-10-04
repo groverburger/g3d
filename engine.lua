@@ -298,15 +298,17 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
     --useCanvases = useCanvases ~= false; -- default = true
 	  love.graphics.setDepthMode("lequal", true)
     --private vars
+    local threeCanvas, twoCanvas
     local modelList = {}
+
     local scene = {}
 
     if useCanvases then
       -- create a canvas that will store the rendered 3d scene
-      scene.threeCanvas = love.graphics.newCanvas(renderWidth, renderHeight)
+      threeCanvas = newCanvas(renderWidth, renderHeight)
       -- create a canvas that will store a 2d layer that can be drawn on top of the 3d scene
       -- useful for creating HUDs
-      scene.twoCanvas = love.graphics.newCanvas(renderWidth, renderHeight)
+      twoCanvas = newCanvas(renderWidth, renderHeight)
     end
     -- a list of all models in the scene
 
@@ -338,8 +340,8 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
         renderWidth = Width
         renderHeight = Height
         if useCanvases then
-          self.threeCanvas = newCanvas(renderWidth, renderHeight)
-          self.twoCanvas = newCanvas(renderWidth, renderHeight)
+          threeCanvas = newCanvas(renderWidth, renderHeight)
+          twoCanvas = newCanvas(renderWidth, renderHeight)
         end
         self.camera.perspective = TransposeMatrix(mat4from_perspective(self.fov, renderWidth/renderHeight, self.nearClip, self.farClip))
     end
@@ -349,7 +351,7 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
     scene.render = function (self, drawArg)
         setColor(1,1,1)
         if useCanvases then
-          setCanvas({self.threeCanvas, depth=true})
+          setCanvas({threeCanvas, depth=true})
         end
         love.graphics.clear(scene.ambientLight,scene.ambientLight,scene.ambientLight)
         setShader(threeShader)
@@ -388,7 +390,7 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
 
         setColor(1,1,1)
         if useCanvases and drawArg ~= false then
-            love.graphics.draw(self.threeCanvas, renderWidth/2,renderHeight/2, 0, 1,-1, renderWidth/2, renderHeight/2)
+            love.graphics.draw(threeCanvas, renderWidth/2,renderHeight/2, 0, 1,-1, renderWidth/2, renderHeight/2)
         end
     end
 
@@ -398,14 +400,14 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
     scene.renderFunction = function (self, func, drawArg)
         setColor(1,1,1)
         if useCanvases then
-          setCanvas(self.twoCanvas)
+          setCanvas(twoCanvas)
           clear(0,0,0,0)
         end
         func()
         setCanvas()
 
         if useCanvases and drawArg ~= false then
-            love.graphics.draw(self.twoCanvas, renderWidth/2,renderHeight/2, 0, 1,1, renderWidth/2, renderHeight/2)
+            love.graphics.draw(twoCanvas, renderWidth/2,renderHeight/2, 0, 1,1, renderWidth/2, renderHeight/2)
         end
     end
 
