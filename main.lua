@@ -1,3 +1,13 @@
+
+-- ZerobraneStudio debug interface
+if arg[#arg] == "-debug" then
+  io.stdout:setvbuf("no"); --luacheck: ignore
+  require("mobdebug").start();
+  --inspect = require "lib.inspect";
+  _DEBUG = true;
+end;
+
+
 -- store global reference to the Engine for use in calling functions
 local cpml   = require "cpml"
 local Engine = require "engine"
