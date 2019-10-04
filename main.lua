@@ -1,5 +1,7 @@
 -- store global reference to the Engine for use in calling functions
-Engine = require "engine"
+local cpml   = require "cpml"
+local Engine = require "engine"
+local ScaleVerts = Engine.ScaleVerts;
 
 function love.load()
     -- make the mouse cursor locked to the screen
@@ -17,6 +19,19 @@ function love.load()
 
     Scene.camera.pos.x = 0
     Scene.camera.pos.z = 5
+
+    -- define vertices for a simple square floor
+    local floorVerts = {}
+    floorVerts[#floorVerts+1] = {-1,-1,-1, 0,0}
+    floorVerts[#floorVerts+1] = {1,-1,-1, 1,0}
+    floorVerts[#floorVerts+1] = {-1,-1,1, 0,1}
+    floorVerts[#floorVerts+1] = {1,-1,1, 1,1}
+    floorVerts[#floorVerts+1] = {-1,-1,1, 0,1}
+    floorVerts[#floorVerts+1] = {1,-1,-1, 1,0}
+
+    -- scale the vertices, then turn the vertices into a Model with a texture
+    FloorModel = Engine.newModel(ScaleVerts(floorVerts, 20,4,20), DefaultTexture)
+    Scene:addModel(FloorModel)
 
     -- turn the vertices into a Model with a texture
     AlakazamModel = Engine.newModel(Engine.loadObj("alakazam.obj"), DefaultTexture)
@@ -45,19 +60,6 @@ function love.load()
         Pyramids[i].wireframe = true
         Scene:addModel(Pyramids[i])
     end
-
-    -- define vertices for a simple square floor
-    local floorVerts = {}
-    floorVerts[#floorVerts+1] = {-1,-1,-1, 0,0}
-    floorVerts[#floorVerts+1] = {1,-1,-1, 1,0}
-    floorVerts[#floorVerts+1] = {-1,-1,1, 0,1}
-    floorVerts[#floorVerts+1] = {1,-1,1, 1,1}
-    floorVerts[#floorVerts+1] = {-1,-1,1, 0,1}
-    floorVerts[#floorVerts+1] = {1,-1,-1, 1,0}
-
-    -- scale the vertices, then turn the vertices into a Model with a texture
-    FloorModel = Engine.newModel(ScaleVerts(floorVerts, 20,4,20), DefaultTexture)
-    Scene:addModel(FloorModel)
 end
 
 function love.update(dt)
