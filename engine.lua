@@ -89,6 +89,7 @@ local function MoveVerts(verts, sx,sy,sz)
     return verts
 end
 
+-- define the shaders used in rendering the scene
 local threeShader = love.graphics.newShader[[
     uniform mat4 view;
     uniform mat4 model_matrix;
@@ -297,8 +298,6 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
     --useCanvases = useCanvases ~= false; -- default = true
 	  love.graphics.setDepthMode("lequal", true)
     local scene = {}
-
-    -- define the shaders used in rendering the scene
 
     scene.renderWidth = renderWidth
     scene.renderHeight = renderHeight

@@ -7,7 +7,6 @@ if arg[#arg] == "-debug" then
   _DEBUG = true;
 end;
 
-
 -- store global reference to the Engine for use in calling functions
 local cpml   = require "cpml"
 local Engine = require "engine"
@@ -31,13 +30,14 @@ function love.load()
     Scene.camera.pos.z = 5
 
     -- define vertices for a simple square floor
-    local floorVerts = {}
-    floorVerts[#floorVerts+1] = {-1,-1,-1, 0,0}
-    floorVerts[#floorVerts+1] = {1,-1,-1, 1,0}
-    floorVerts[#floorVerts+1] = {-1,-1,1, 0,1}
-    floorVerts[#floorVerts+1] = {1,-1,1, 1,1}
-    floorVerts[#floorVerts+1] = {-1,-1,1, 0,1}
-    floorVerts[#floorVerts+1] = {1,-1,-1, 1,0}
+    local floorVerts = {
+      {-1,-1,-1, 0, 0},
+      { 1,-1,-1, 1, 0},
+      {-1,-1, 1, 0, 1},
+      { 1,-1, 1, 1, 1},
+      {-1,-1, 1, 0, 1},
+      { 1,-1,-1, 1, 0}
+    }
 
     -- scale the vertices, then turn the vertices into a Model with a texture
     FloorModel = Engine.newModel(ScaleVerts(floorVerts, 20,4,20), DefaultTexture)
@@ -47,22 +47,23 @@ function love.load()
     AlakazamModel = Engine.newModel(Engine.loadObj("alakazam.obj"), DefaultTexture)
     Scene:addModel(AlakazamModel)
 
-    local pyramidVerts = {}
-    pyramidVerts[#pyramidVerts+1] = {-1,-1,-1}
-    pyramidVerts[#pyramidVerts+1] = {-1,1,1}
-    pyramidVerts[#pyramidVerts+1] = {1,1,-1}
+    local pyramidVerts = {
+      {-1,-1,-1},
+      {-1, 1, 1},
+      { 1, 1,-1},
 
-    pyramidVerts[#pyramidVerts+1] = {-1,1,1}
-    pyramidVerts[#pyramidVerts+1] = {1,1,-1}
-    pyramidVerts[#pyramidVerts+1] = {1,-1,1}
+      {-1, 1, 1},
+      { 1, 1,-1},
+      { 1,-1, 1},
 
-    pyramidVerts[#pyramidVerts+1] = {-1,-1,-1}
-    pyramidVerts[#pyramidVerts+1] = {1,1,-1}
-    pyramidVerts[#pyramidVerts+1] = {1,-1,1}
+      {-1,-1,-1},
+      { 1, 1,-1},
+      { 1,-1, 1},
 
-    pyramidVerts[#pyramidVerts+1] = {-1,-1,-1}
-    pyramidVerts[#pyramidVerts+1] = {-1,1,1}
-    pyramidVerts[#pyramidVerts+1] = {1,-1,1}
+      {-1,-1,-1},
+      {-1, 1, 1},
+      { 1,-1, 1},
+    }
 
     Pyramids = {}
     for i=1, 4 do
