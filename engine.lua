@@ -329,18 +329,18 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
     scene.ambientVector = {0,1,0}
 
     -- returns a reference to the model
-    scene.addModel = function (self, model)
+    function scene:addModel(model)
         modelList[model] = model
         return model
     end
 
     -- finds and removes model, returns boolean if successful
-    scene.removeModel = function (self, model)
+    function scene:removeModel(model)
         modelList[model] = nil
     end
 
     -- resize output canvas to given dimensions
-    scene.resize = function (self, Width, Height)
+    function scene:resize(Width, Height)
         renderWidth = Width
         renderHeight = Height
         if useCanvases then
@@ -352,7 +352,7 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
 
     -- renders the models in the scene to the threeCanvas
     -- will draw threeCanvas if drawArg is not given or is true (use if you want to scale the game canvas to window)
-    scene.render = function (self, drawArg)
+    function scene:render(drawArg)
         setColor(1,1,1)
         if useCanvases then
           setCanvas({threeCanvas, depth=true})
@@ -401,7 +401,7 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
     -- renders the given func to the twoCanvas
     -- this is useful for drawing 2d HUDS and information on the screen in front of the 3d scene
     -- will draw threeCanvas if drawArg is not given or is true (use if you want to scale the game canvas to window)
-    scene.renderFunction = function (self, func, drawArg)
+    function scene:renderFunction(func, drawArg)
         setColor(1,1,1)
         if useCanvases then
           setCanvas(twoCanvas)
@@ -418,7 +418,7 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
     -- useful if mouse relativeMode is enabled
     -- useful to call from love.mousemoved
     -- a simple first person mouse look function
-    scene.mouseLook = function (self, x, y, dx, dy)
+    function scene:mouseLook(x, y, dx, dy)
         local CameraAngle = self.camera.angle
         CameraAngle.x = CameraAngle.x + rad(dx * 0.5)
         CameraAngle.y = max(min(CameraAngle.y + rad(dy * 0.5), pi/2), -1*pi/2)
