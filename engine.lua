@@ -30,6 +30,8 @@ local newMesh   = love.graphics.newMesh;
 local setColor  = love.graphics.setColor;
 local setShader = love.graphics.setShader;
 local clear     = love.graphics.clear;
+local setWireframe = love.graphics.setWireframe
+local setMeshCullMode = love.graphics.setMeshCullMode;
 
 local function TransposeMatrix(mat)
 	return mat4transpose(mat4new(), mat)
@@ -86,6 +88,51 @@ local function MoveVerts(verts, sx,sy,sz)
 
     return verts
 end
+
+local threeShader = love.graphics.newShader[[
+    uniform mat4 view;
+    uniform mat4 model_matrix;
+    uniform mat4 model_matrix_inverse;
+    uniform float ambientLight;
+    uniform vec3 ambientVector;
+
+    varying mat4 modelView;
+    varying mat4 modelViewProjection;
+    varying vec3 normal;
+    varying vec3 vposition;
+
+    #ifdef VERTEX
+        attribute vec4 VertexNormal;
+
+        vec4 position(mat4 transform_projection, vec4 vertex_position) {
+            modelView = view * model_matrix;
+            modelViewProjection = view * model_matrix * transform_projection;
+
+            normal = vec3(model_matrix_inverse * vec4(VertexNormal));
+            vposition = vec3(model_matrix * vertex_position);
+
+            return view * model_matrix * vertex_position;
+        }
+    #endif
+
+    #ifdef PIXEL
+        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+            vec4 texturecolor = Texel(texture, texture_coords);
+
+            // if the alpha here is zero just don't draw anything here
+            // otherwise alpha values of zero will render as black pixels
+            if (texturecolor.a == 0.0)
+            {
+                discard;
+            }
+
+            float light = max(dot(normalize(ambientVector), normal), 0);
+            texturecolor.rgb *= max(light, ambientLight);
+
+            return color*texturecolor;
+        }
+    #endif
+]]
 
 local engine = {
   ScaleVerts = ScaleVerts,
@@ -246,66 +293,22 @@ function engine.newModel(verts, texture, coords, color, format)
 end
 
 -- create a new Scene object with given canvas output size
-function engine.newScene(renderWidth,renderHeight)
-	love.graphics.setDepthMode("lequal", true)
+function engine.newScene(renderWidth, renderHeight, useCanvases)
+    --useCanvases = useCanvases ~= false; -- default = true
+	  love.graphics.setDepthMode("lequal", true)
     local scene = {}
 
     -- define the shaders used in rendering the scene
-    scene.threeShader = love.graphics.newShader[[
-        uniform mat4 view;
-        uniform mat4 model_matrix;
-        uniform mat4 model_matrix_inverse;
-        uniform float ambientLight;
-        uniform vec3 ambientVector;
-
-        varying mat4 modelView;
-        varying mat4 modelViewProjection;
-        varying vec3 normal;
-        varying vec3 vposition;
-
-        #ifdef VERTEX
-            attribute vec4 VertexNormal;
-
-            vec4 position(mat4 transform_projection, vec4 vertex_position) {
-                modelView = view * model_matrix;
-                modelViewProjection = view * model_matrix * transform_projection;
-
-                normal = vec3(model_matrix_inverse * vec4(VertexNormal));
-                vposition = vec3(model_matrix * vertex_position);
-
-                return view * model_matrix * vertex_position;
-            }
-        #endif
-
-        #ifdef PIXEL
-            vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-                vec4 texturecolor = Texel(texture, texture_coords);
-
-                // if the alpha here is zero just don't draw anything here
-                // otherwise alpha values of zero will render as black pixels
-                if (texturecolor.a == 0.0)
-                {
-                    discard;
-                }
-
-                float light = max(dot(normalize(ambientVector), normal), 0);
-                texturecolor.rgb *= max(light, ambientLight);
-
-                return color*texturecolor;
-            }
-        #endif
-    ]]
-
 
     scene.renderWidth = renderWidth
     scene.renderHeight = renderHeight
-
-    -- create a canvas that will store the rendered 3d scene
-    scene.threeCanvas = love.graphics.newCanvas(renderWidth, renderHeight)
-    -- create a canvas that will store a 2d layer that can be drawn on top of the 3d scene
-    -- useful for creating HUDs
-    scene.twoCanvas = love.graphics.newCanvas(renderWidth, renderHeight)
-
+    if useCanvases then
+      -- create a canvas that will store the rendered 3d scene
+      scene.threeCanvas = love.graphics.newCanvas(renderWidth, renderHeight)
+      -- create a canvas that will store a 2d layer that can be drawn on top of the 3d scene
+      -- useful for creating HUDs
+      scene.twoCanvas = love.graphics.newCanvas(renderWidth, renderHeight)
+    end
     -- a list of all models in the scene
     scene.modelList = {}
 
@@ -340,11 +343,13 @@ function engine.newScene(renderWidth,renderHeight)
     end
 
     -- resize output canvas to given dimensions
-    scene.resize = function (self, renderWidth, renderHeight)
-        self.renderWidth = renderWidth
-        self.renderHeight = renderHeight
-        self.threeCanvas = newCanvas(renderWidth, renderHeight)
-        self.twoCanvas = newCanvas(renderWidth, renderHeight)
+    scene.resize = function (self, Width, Height)
+        renderWidth = Width
+        renderHeight = Height
+        if useCanvases then
+          self.threeCanvas = newCanvas(renderWidth, renderHeight)
+          self.twoCanvas = newCanvas(renderWidth, renderHeight)
+        end
         self.camera.perspective = TransposeMatrix(mat4from_perspective(self.fov, renderWidth/renderHeight, self.nearClip, self.farClip))
     end
 
@@ -352,9 +357,11 @@ function engine.newScene(renderWidth,renderHeight)
     -- will draw threeCanvas if drawArg is not given or is true (use if you want to scale the game canvas to window)
     scene.render = function (self, drawArg)
         setColor(1,1,1)
-        setCanvas({self.threeCanvas, depth=true})
-        love.graphics.clear(0,0,0,0)
-        setShader(self.threeShader)
+        if useCanvases then
+          setCanvas({self.threeCanvas, depth=true})
+        end
+        love.graphics.clear(scene.ambientLight,scene.ambientLight,scene.ambientLight)
+        setShader(threeShader)
 
         -- compile camera data into usable view to send to threeShader
         local Camera = self.camera
@@ -363,25 +370,25 @@ function engine.newScene(renderWidth,renderHeight)
         camTransform:rotate(camTransform, Camera.angle.x, vec3.unit_y)
         camTransform:rotate(camTransform, Camera.angle.z, vec3.unit_z)
         camTransform:translate(camTransform, Camera.pos*-1)
-        self.threeShader:send("view", Camera.perspective * TransposeMatrix(camTransform))
-        self.threeShader:send("ambientLight", self.ambientLight)
-        self.threeShader:send("ambientVector", self.ambientVector)
+        threeShader:send("view", Camera.perspective * TransposeMatrix(camTransform))
+        threeShader:send("ambientLight", self.ambientLight)
+        threeShader:send("ambientVector", self.ambientVector)
 
         -- go through all models in modelList and draw them
         for _, model in ipairs(self.modelList) do
             if model ~= nil and model.visible and #model.verts > 0 then
-                self.threeShader:send("model_matrix", model.transform)
-                self.threeShader:send("model_matrix_inverse", TransposeMatrix(InvertMatrix(model.transform)))
+                threeShader:send("model_matrix", model.transform)
+                threeShader:send("model_matrix_inverse", TransposeMatrix(InvertMatrix(model.transform)))
 
-                love.graphics.setWireframe(model.wireframe)
+                setWireframe(model.wireframe)
                 if model.culling then
-                    love.graphics.setMeshCullMode("back")
+                    setMeshCullMode("back")
                 end
 
-                love.graphics.draw(model.mesh, -self.renderWidth/2, -self.renderHeight/2)
+                love.graphics.draw(model.mesh, -renderWidth/2, -renderHeight/2)
 
-                love.graphics.setMeshCullMode("none")
-                love.graphics.setWireframe(false)
+                setMeshCullMode("none")
+                setWireframe(false)
             end
         end
 
@@ -389,8 +396,8 @@ function engine.newScene(renderWidth,renderHeight)
         setCanvas()
 
         setColor(1,1,1)
-        if drawArg == nil or drawArg == true then
-            love.graphics.draw(self.threeCanvas, self.renderWidth/2,self.renderHeight/2, 0, 1,-1, self.renderWidth/2, self.renderHeight/2)
+        if useCanvases and drawArg ~= false then
+            love.graphics.draw(self.threeCanvas, renderWidth/2,renderHeight/2, 0, 1,-1, renderWidth/2, renderHeight/2)
         end
     end
 
@@ -399,13 +406,15 @@ function engine.newScene(renderWidth,renderHeight)
     -- will draw threeCanvas if drawArg is not given or is true (use if you want to scale the game canvas to window)
     scene.renderFunction = function (self, func, drawArg)
         setColor(1,1,1)
-        setCanvas(self.twoCanvas)
-        clear(0,0,0,0)
+        if useCanvases then
+          setCanvas(self.twoCanvas)
+          clear(0,0,0,0)
+        end
         func()
         setCanvas()
 
-        if drawArg ~= false then
-            love.graphics.draw(self.twoCanvas, self.renderWidth/2,self.renderHeight/2, 0, 1,1, self.renderWidth/2, self.renderHeight/2)
+        if useCanvases and drawArg ~= false then
+            love.graphics.draw(self.twoCanvas, renderWidth/2,renderHeight/2, 0, 1,1, renderWidth/2, renderHeight/2)
         end
     end
 
