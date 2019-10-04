@@ -303,7 +303,7 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
 	  love.graphics.setDepthMode("lequal", true)
     --private vars
     local threeCanvas, twoCanvas
-    local modelList = {}
+    local modelList = {} -- a list of all models in the scene
 
     local scene = {}
 
@@ -314,7 +314,6 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
       -- useful for creating HUDs
       twoCanvas = newCanvas(renderWidth, renderHeight)
     end
-    -- a list of all models in the scene
 
     scene.fov = 90
     scene.nearClip = 0.001
