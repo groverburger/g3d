@@ -144,10 +144,10 @@ function engine.loadObj(objPath)
 	local faces = {}
 	local verts = {}
 
-	for _,v in pairs(obj.v) do
+	for _,v in ipairs(obj.v) do
 			insert(verts, {v.x,v.y,v.z})
 	end
-	for _,v in pairs(obj.f) do
+	for _,v in ipairs(obj.f) do
 			insert(faces, {verts[v[1].v][1], verts[v[1].v][2], verts[v[1].v][3], obj.vt[v[1].vt].u, obj.vt[v[1].vt].v})
 			insert(faces, {verts[v[2].v][1], verts[v[2].v][2], verts[v[2].v][3], obj.vt[v[2].vt].u, obj.vt[v[2].vt].v})
 			insert(faces, {verts[v[3].v][1], verts[v[3].v][2], verts[v[3].v][3], obj.vt[v[3].vt].u, obj.vt[v[3].vt].v})
