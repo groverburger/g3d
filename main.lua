@@ -12,6 +12,10 @@ local cpml   = require "cpml"
 local Engine = require "engine"
 local ScaleVerts = Engine.ScaleVerts;
 
+local Scene
+local AlakazamModel
+local Pyramids
+
 function love.load()
     -- make the mouse cursor locked to the screen
     love.mouse.setRelativeMode(true)
@@ -23,7 +27,7 @@ function love.load()
     -- create a Scene object which stores and renders Models
     -- arguments refer to the Scene's camera's canvas output size in pixels
     Scene = Engine.newScene(love.graphics.getWidth(), love.graphics.getHeight())
-    DefaultTexture = love.graphics.newImage("texture.png")
+    local DefaultTexture = love.graphics.newImage("texture.png")
     Timer = 0
 
     Scene.camera.pos.x = 0
@@ -40,7 +44,7 @@ function love.load()
     }
 
     -- scale the vertices, then turn the vertices into a Model with a texture
-    FloorModel = Engine.newModel(ScaleVerts(floorVerts, 20,4,20), DefaultTexture)
+    local FloorModel = Engine.newModel(ScaleVerts(floorVerts, 20,4,20), DefaultTexture)
     Scene:addModel(FloorModel)
 
     -- turn the vertices into a Model with a texture
