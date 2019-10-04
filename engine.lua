@@ -297,10 +297,10 @@ end
 function engine.newScene(renderWidth, renderHeight, useCanvases)
     --useCanvases = useCanvases ~= false; -- default = true
 	  love.graphics.setDepthMode("lequal", true)
+    --private vars
+    local modelList = {}
     local scene = {}
 
-    scene.renderWidth = renderWidth
-    scene.renderHeight = renderHeight
     if useCanvases then
       -- create a canvas that will store the rendered 3d scene
       scene.threeCanvas = love.graphics.newCanvas(renderWidth, renderHeight)
@@ -309,7 +309,6 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
       scene.twoCanvas = love.graphics.newCanvas(renderWidth, renderHeight)
     end
     -- a list of all models in the scene
-    scene.modelList = {}
 
     scene.fov = 90
     scene.nearClip = 0.001
@@ -325,20 +324,13 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
 
     -- returns a reference to the model
     scene.addModel = function (self, model)
-        insert(self.modelList, model)
+        modelList[model] = model
         return model
     end
 
     -- finds and removes model, returns boolean if successful
     scene.removeModel = function (self, model)
-        for i, m in ipairs(self.modelList) do
-            if m == model then
-                remove(self.modelList, i)
-                return true
-            end
-        end;
-
-        return false
+        modelList[model] = nil
     end
 
     -- resize output canvas to given dimensions
@@ -374,7 +366,7 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
         threeShader:send("ambientVector", self.ambientVector)
 
         -- go through all models in modelList and draw them
-        for _, model in ipairs(self.modelList) do
+        for model in pairs(modelList) do
             if model ~= nil and model.visible and #model.verts > 0 then
                 threeShader:send("model_matrix", model.transform)
                 threeShader:send("model_matrix_inverse", TransposeMatrix(InvertMatrix(model.transform)))
