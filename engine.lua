@@ -24,6 +24,8 @@ local pi     = math.pi;
 local insert = table.insert;
 local remove = table.remove;
 
+local ipairs = ipairs;
+
 local newCanvas = love.graphics.newCanvas;
 local setCanvas = love.graphics.setCanvas;
 local newMesh   = love.graphics.newMesh;

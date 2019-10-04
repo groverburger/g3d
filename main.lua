@@ -1,10 +1,9 @@
 
--- ZerobraneStudio debug interface
+-- ZerobraneStudio debug interface [https://studio.zerobrane.com/]
 if arg[#arg] == "-debug" then
   io.stdout:setvbuf("no"); --luacheck: ignore
   require("mobdebug").start();
-  --inspect = require "lib.inspect";
-  _DEBUG = true;
+  _DEBUG = true; --global var to signal debugging session to all modules
 end;
 
 -- store global reference to the Engine for use in calling functions
@@ -15,6 +14,8 @@ local ScaleVerts = Engine.ScaleVerts;
 local Scene
 local AlakazamModel
 local Pyramids
+local Timer
+local Paused
 
 function love.load()
     -- make the mouse cursor locked to the screen
