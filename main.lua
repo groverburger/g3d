@@ -31,8 +31,7 @@ function love.load()
     local DefaultTexture = love.graphics.newImage("texture.png")
     Timer = 0
 
-    Scene.camera.pos.x = 0
-    Scene.camera.pos.z = 5
+    Scene.camera.setPos(0,0,5)
 
     -- define vertices for a simple square floor
     local floorVerts = {
@@ -93,25 +92,22 @@ function love.update(dt)
     end
 
     -- simple first-person camera movement
-    local mx,my = 0,0
+    local mx, mz = 0, 0
     if love.keyboard.isDown("w") then
-        my = my - 1
+        mz = mz - 1
     end
     if love.keyboard.isDown("a") then
         mx = mx - 1
     end
     if love.keyboard.isDown("s") then
-        my = my + 1
+        mz = mz + 1
     end
     if love.keyboard.isDown("d") then
         mx = mx + 1
     end
 
-    if mx ~= 0 or my ~= 0 then
-        local angle = math.atan2(my,mx)
-        local speed = 0.1
-        Scene.camera.pos.x = Scene.camera.pos.x + math.cos(Scene.camera.angle.x + angle)*speed
-        Scene.camera.pos.z = Scene.camera.pos.z + math.sin(Scene.camera.angle.x + angle)*speed
+    if mx ~= 0 or mz ~= 0 then
+      Scene.camera.move(mx, 0, mz)
     end
 end
 

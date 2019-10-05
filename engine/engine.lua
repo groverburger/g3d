@@ -18,14 +18,18 @@ local min    = math.min;
 local max    = math.max;
 local floor  = math.floor;
 local rad    = math.rad;
+local atan2  = math.atan2;
+local sin    = math.sin;
+local cos    = math.cos;
 local pi     = math.pi;
 
 local insert = table.insert;
-local remove = table.remove;
 
 local ipairs = ipairs;
 local unpack = unpack;
 
+local getWidth  = love.graphics.getWidth;
+local getHeight = love.graphics.getHeight;
 local newCanvas = love.graphics.newCanvas;
 local setCanvas = love.graphics.setCanvas;
 local newMesh   = love.graphics.newMesh;
@@ -142,6 +146,54 @@ local engine = {
   ScaleVerts = ScaleVerts,
   MoveVerts = MoveVerts,
 }
+--
+-- create a new camera object
+function engine.newCamera(fov, width, height, nearClip, farClip)
+  fov      = fov or 60;
+  width    = width or getWidth();
+  height   = height or getHeight();
+  nearClip = nearClip or 0.1;
+  farClip  = farClip or 1000;
+  --
+  local pos   = vec3(0,0,0);
+  local angle = vec3(0,0,0);
+  local speed = 0.1
+  local perspective = TransposeMatrix(mat4from_perspective(fov, width/height, nearClip, farClip))
+  local view;
+  --
+  local function calcView()
+    local camTransform = mat4()
+    camTransform:rotate(camTransform, angle.y, vec3.unit_x);
+    camTransform:rotate(camTransform, angle.x, vec3.unit_y);
+    camTransform:rotate(camTransform, angle.z, vec3.unit_z);
+    camTransform:translate(camTransform, pos * -1);
+    view = perspective * TransposeMatrix(camTransform);
+  end;
+  calcView();
+  --
+  return {
+    view   = function()
+      return view;
+    end,
+    rotate = function(dx, dy)
+      angle.x = angle.x + rad(dx * 0.5)
+      angle.y = max(min(angle.y + rad(dy * 0.5), pi/2), -1*pi/2)
+      calcView();
+    end,
+    setPos = function(x, y, z)
+      pos.x = x or pos.x;
+      pos.y = y or pos.y;
+      pos.z = z or pos.z;
+      calcView()
+    end,
+    move   = function(dx, dy, dz) --TODO: pos.y calculation
+      local atn = atan2(dz, dx)
+      pos.x = pos.x + cos(angle.x + atn) * speed
+      pos.z = pos.z + sin(angle.x + atn) * speed
+      calcView()
+    end,
+  };
+end;
 --
 -- create a new Model object
 -- given a table of verts for example: { {0,0,0}, {0,1,0}, {0,0,1} }
@@ -303,11 +355,11 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
     scene.fov = 90
     scene.nearClip = 0.001
     scene.farClip = 10000
-    scene.camera = {
-        pos = vec3(0,0,0),
-        angle = vec3(0,0,0),
-        perspective = TransposeMatrix(mat4from_perspective(scene.fov, renderWidth/renderHeight, scene.nearClip, scene.farClip)),
-    }
+    scene.camera = engine.newCamera(
+      scene.fov,
+      renderWidth, renderHeight,
+      scene.nearClip, scene.farClip
+    )
 
     scene.ambientLight = 0.25
     scene.ambientVector = {0,1,0}
@@ -352,12 +404,7 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
 
         -- compile camera data into usable view to send to threeShader
         local Camera = self.camera
-        local camTransform = mat4()
-        camTransform:rotate(camTransform, Camera.angle.y, vec3.unit_x)
-        camTransform:rotate(camTransform, Camera.angle.x, vec3.unit_y)
-        camTransform:rotate(camTransform, Camera.angle.z, vec3.unit_z)
-        camTransform:translate(camTransform, Camera.pos*-1)
-        threeShader:send("view", Camera.perspective * TransposeMatrix(camTransform))
+        threeShader:send("view", Camera.view())
         threeShader:send("ambientLight", self.ambientLight)
         threeShader:send("ambientVector", self.ambientVector)
 
@@ -422,9 +469,7 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
     -- useful to call from love.mousemoved
     -- a simple first person mouse look function
     function scene:mouseLook(x, y, dx, dy)
-        local CameraAngle = self.camera.angle
-        CameraAngle.x = CameraAngle.x + rad(dx * 0.5)
-        CameraAngle.y = max(min(CameraAngle.y + rad(dy * 0.5), pi/2), -1*pi/2)
+      scene.camera.rotate(dx,dy);
     end
 
     return scene
