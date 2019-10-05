@@ -286,7 +286,9 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
 	  love.graphics.setDepthMode("lequal", true)
     --private vars
     local threeCanvas, twoCanvas
-    local modelList = {} -- a list of all models in the scene
+    local wfModelList   = {} -- a list of all wire frame models in the scene
+    local clngModelList = {} -- a list of all culling models in the scene
+    local ModelList     = {} -- a list of all other models in the scene
 
     local scene = {}
 
@@ -312,13 +314,19 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
 
     -- returns a reference to the model
     function scene:addModel(model)
-        modelList[model] = model
+        if     model.wireframe then wfModelList[model]   = model
+        elseif model.culling   then clngModelList[model] = model
+        else                        ModelList[model]     = model
+        end
         return model
     end
 
     -- finds and removes model, returns boolean if successful
     function scene:removeModel(model)
-        modelList[model] = nil
+        -- brute force ...
+        wfModelList[model]   = nil
+        clngModelList[model] = nil
+        ModelList[model]     = nil
     end
 
     -- resize output canvas to given dimensions
@@ -353,23 +361,36 @@ function engine.newScene(renderWidth, renderHeight, useCanvases)
         threeShader:send("ambientLight", self.ambientLight)
         threeShader:send("ambientVector", self.ambientVector)
 
-        -- go through all models in modelList and draw them
-        for model in pairs(modelList) do
-            if model ~= nil and model.visible and #model.verts > 0 then
-                threeShader:send("model_matrix", model.transform)
-                threeShader:send("model_matrix_inverse", TransposeMatrix(InvertMatrix(model.transform)))
-
-                setWireframe(model.wireframe)
-                if model.culling then
-                    setMeshCullMode("back")
-                end
-
-                draw(model.mesh, -renderWidth/2, -renderHeight/2)
-
-                setMeshCullMode("none")
-                setWireframe(false)
-            end
+        local px, py = -renderWidth/2, -renderHeight/2
+        -- go through all models and draw them
+        setWireframe(false)
+        for model in pairs(ModelList) do
+          if model ~= nil and model.visible and #model.verts > 0 then
+            threeShader:send("model_matrix", model.transform)
+            threeShader:send("model_matrix_inverse", TransposeMatrix(InvertMatrix(model.transform)))
+            draw(model.mesh, px, py)
+          end
         end
+        -- go through all culling models and draw them
+        setMeshCullMode("back")
+        for model in pairs(clngModelList) do
+          if model ~= nil and model.visible and #model.verts > 0 then
+            threeShader:send("model_matrix", model.transform)
+            threeShader:send("model_matrix_inverse", TransposeMatrix(InvertMatrix(model.transform)))
+            draw(model.mesh, px, py)
+          end
+        end
+        setMeshCullMode("none")
+        -- go through all wireframe models and draw them
+        setWireframe(true)
+        for model in pairs(wfModelList) do
+          if model ~= nil and model.visible and #model.verts > 0 then
+            threeShader:send("model_matrix", model.transform)
+            threeShader:send("model_matrix_inverse", TransposeMatrix(InvertMatrix(model.transform)))
+            draw(model.mesh, px, py)
+          end
+        end
+        setWireframe(false)
 
         setShader()
         setCanvas()
