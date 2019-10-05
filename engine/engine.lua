@@ -2,7 +2,6 @@
 -- groverburger 2019
 
 local cpml   = require "cpml"
-local Reader = require "reader"
 
 local mat4          = cpml.mat4;
 local mat4new       = mat4.new;
@@ -144,22 +143,6 @@ local engine = {
   MoveVerts = MoveVerts,
 }
 --
-function engine.loadObj(objPath)
-  local obj = Reader.load(objPath)
-	local faces = {}
-	local verts = {}
-
-	for _,v in ipairs(obj.v) do
-			insert(verts, {v.x,v.y,v.z})
-	end
-	for _,v in ipairs(obj.f) do
-			insert(faces, {verts[v[1].v][1], verts[v[1].v][2], verts[v[1].v][3], obj.vt[v[1].vt].u, obj.vt[v[1].vt].v})
-			insert(faces, {verts[v[2].v][1], verts[v[2].v][2], verts[v[2].v][3], obj.vt[v[2].vt].u, obj.vt[v[2].vt].v})
-			insert(faces, {verts[v[3].v][1], verts[v[3].v][2], verts[v[3].v][3], obj.vt[v[3].vt].u, obj.vt[v[3].vt].v})
-	end
-	return faces
-end
-
 -- create a new Model object
 -- given a table of verts for example: { {0,0,0}, {0,1,0}, {0,0,1} }
 -- each vert is its own table that contains three coordinate numbers, and may contain 2 extra numbers as uv coordinates
