@@ -1,25 +1,25 @@
 -- store global reference to the Engine for use in calling functions
-Engine = require "engine"
+Engine = require "ss3d"
 
 function love.load()
     -- make the mouse cursor locked to the screen
     love.mouse.setRelativeMode(true)
     love.window.setTitle("ss3d 1.3 demo")
-    love.window.setMode(1024, 1024*9/16, {})
+    love.window.setMode(1024, 1024*9/16, {vsync = false})
     love.graphics.setBackgroundColor(0.52,0.57,0.69)
     Paused = false
 
     -- create a Scene object which stores and renders Models
     -- arguments refer to the Scene's camera's canvas output size in pixels
     Scene = Engine.newScene(love.graphics.getWidth(), love.graphics.getHeight())
-    DefaultTexture = love.graphics.newImage("texture.png")
+    DefaultTexture = love.graphics.newImage("assets/texture.png")
     Timer = 0
 
     Scene.camera.pos.x = 0
     Scene.camera.pos.z = 5
 
     -- turn the vertices into a Model with a texture
-    AlakazamModel = Engine.newModel(Engine.loadObj("alakazam.obj"), DefaultTexture)
+    AlakazamModel = Engine.newModel(Engine.loadObj("assets/alakazam.obj"), DefaultTexture)
     Scene:addModel(AlakazamModel)
 
     local pyramidVerts = {}
@@ -56,7 +56,7 @@ function love.load()
     floorVerts[#floorVerts+1] = {1,-1,-1, 1,0}
 
     -- scale the vertices, then turn the vertices into a Model with a texture
-    FloorModel = Engine.newModel(ScaleVerts(floorVerts, 20,4,20), DefaultTexture)
+    FloorModel = Engine.newModel(Engine.scaleVerts(floorVerts, 20,4,20), DefaultTexture)
     Scene:addModel(FloorModel)
 end
 
@@ -91,9 +91,9 @@ function love.update(dt)
 
     if mx ~= 0 or my ~= 0 then
         local angle = math.atan2(my,mx)
-        local speed = 0.1
-        Scene.camera.pos.x = Scene.camera.pos.x + math.cos(Scene.camera.angle.x + angle)*speed
-        Scene.camera.pos.z = Scene.camera.pos.z + math.sin(Scene.camera.angle.x + angle)*speed
+        local speed = 0.15
+        Scene.camera.pos.x = Scene.camera.pos.x + math.cos(Scene.camera.angle.x + angle)*speed*dt*60
+        Scene.camera.pos.z = Scene.camera.pos.z + math.sin(Scene.camera.angle.x + angle)*speed*dt*60
     end
 end
 
@@ -105,7 +105,7 @@ function love.mousemoved(x,y, dx,dy)
 end
 
 function love.keypressed(k)
-    if k == "space" then
+    if k == "escape" then
         Paused = not Paused
     end
 end

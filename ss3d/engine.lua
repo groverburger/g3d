@@ -1,13 +1,43 @@
 -- Super Simple 3D Engine v1.2
 -- groverburger 2019
 
-cpml = require "cpml"
-Reader = require "reader"
+local function TransposeMatrix(mat)
+	local m = cpml.mat4.new()
+	return cpml.mat4.transpose(m, mat)
+end
+local function InvertMatrix(mat)
+	local m = cpml.mat4.new()
+	return cpml.mat4.invert(m, mat)
+end
+local function CrossProduct(v1,v2)
+    local a = {x = v1[1], y = v1[2], z = v1[3]}
+    local b = {x = v2[1], y = v2[2], z = v2[3]}
+
+    local x, y, z
+    x = a.y * (b.z or 0) - (a.z or 0) * b.y
+    y = (a.z or 0) * b.x - a.x * (b.z or 0)
+    z = a.x * b.y - a.y * b.x
+    return { x, y, z }
+end
+local function VectorLength(x2,y2,z2)
+    local x1,y1,z1 = 0,0,0
+    return ((x2-x1)^2+(y2-y1)^2+(z2-z1)^2)^0.5
+end
+local function UnitVectorOf(vector)
+    local ab1 = math.abs(vector[1])
+    local ab2 = math.abs(vector[2])
+    local ab3 = math.abs(vector[3])
+    local max = VectorLength(ab1, ab2, ab3)
+    if max == 0 then max = 1 end
+
+    local ret = {vector[1]/max, vector[2]/max, vector[3]/max}
+    return ret
+end
 
 local engine = {}
 
 function engine.loadObj(objPath)
-    local obj = Reader.load(objPath)
+    local obj = ObjReader.load(objPath)
 	local faces = {}
 	local verts = {}
 	
@@ -341,39 +371,7 @@ function engine.newScene(renderWidth,renderHeight)
 end
 
 -- useful functions
-function TransposeMatrix(mat)
-	local m = cpml.mat4.new()
-	return cpml.mat4.transpose(m, mat)
-end
-function InvertMatrix(mat)
-	local m = cpml.mat4.new()
-	return cpml.mat4.invert(m, mat)
-end
-function CrossProduct(v1,v2)
-    local a = {x = v1[1], y = v1[2], z = v1[3]}
-    local b = {x = v2[1], y = v2[2], z = v2[3]}
-
-    local x, y, z
-    x = a.y * (b.z or 0) - (a.z or 0) * b.y
-    y = (a.z or 0) * b.x - a.x * (b.z or 0)
-    z = a.x * b.y - a.y * b.x
-    return { x, y, z }
-end
-function UnitVectorOf(vector)
-    local ab1 = math.abs(vector[1])
-    local ab2 = math.abs(vector[2])
-    local ab3 = math.abs(vector[3])
-    local max = VectorLength(ab1, ab2, ab3)
-    if max == 0 then max = 1 end
-
-    local ret = {vector[1]/max, vector[2]/max, vector[3]/max}
-    return ret
-end
-function VectorLength(x2,y2,z2)
-    local x1,y1,z1 = 0,0,0
-    return ((x2-x1)^2+(y2-y1)^2+(z2-z1)^2)^0.5
-end
-function ScaleVerts(verts, sx,sy,sz)
+function engine.scaleVerts(verts, sx,sy,sz)
     if sy == nil then
         sy = sx
         sz = sx
@@ -388,7 +386,7 @@ function ScaleVerts(verts, sx,sy,sz)
 
     return verts
 end
-function MoveVerts(verts, sx,sy,sz)
+function engine.moveVerts(verts, sx,sy,sz)
     if sy == nil then
         sy = sx
         sz = sx
