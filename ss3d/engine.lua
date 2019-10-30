@@ -57,39 +57,29 @@ end
 -- each vert is its own table that contains three coordinate numbers, and may contain 2 extra numbers as uv coordinates
 -- another example, this with uvs: { {0,0,0, 0,0}, {0,1,0, 1,0}, {0,0,1, 0,1} }
 -- polygons are automatically created with three consecutive verts
-function engine.newModel(verts, texture, coords, color, format)
+function engine.newModel(verts, texture)
     local m = {}
 
     -- default values if no arguments are given
-    if coords == nil then
-        coords = {0,0,0}
-    end
-    if color == nil then
-        color = {1,1,1}
-    end
-    if format == nil then
-        format = {
-            {"VertexPosition", "float", 3},
-            {"VertexTexCoord", "float", 2},
-            {"VertexNormal", "float", 3},
-        }
-    end
+    local format = {
+        {"VertexPosition", "float", 3},
+        {"VertexTexCoord", "float", 2},
+        {"VertexNormal", "float", 3},
+    }
+
+    assert(verts ~= nil, "Invalid vertices recieved in newModel")
+
     if texture == nil then
-        texture = love.graphics.newCanvas(1,1)
-        love.graphics.setCanvas(texture)
+        m.texture = love.graphics.newCanvas(1,1)
+        love.graphics.setCanvas(m.texture)
         love.graphics.clear(0,0,0)
         love.graphics.setCanvas()
-    end
-    if verts == nil then
-        verts = {}
+    else
+        m.texture = texture
     end
 
     -- translate verts by given coords
     for i=1, #verts do
-        verts[i][1] = verts[i][1] + coords[1]
-        verts[i][2] = verts[i][2] + coords[2]
-        verts[i][3] = verts[i][3] + coords[3]
-
         -- if not given uv coordinates, put in random ones
         if #verts[i] < 5 then
             verts[i][4] = love.math.random()
@@ -125,13 +115,11 @@ function engine.newModel(verts, texture, coords, color, format)
     m.mesh = nil
     if #verts > 0 then
         m.mesh = love.graphics.newMesh(format, verts, "triangles")
-        m.mesh:setTexture(texture)
+        m.mesh:setTexture(m.texture)
     end
-    m.texture = texture
     m.format = format
     m.verts = verts
     m.transform = TransposeMatrix(cpml.mat4.identity())
-    m.color = color
     m.visible = true
     m.wireframe = false
     m.culling = false
