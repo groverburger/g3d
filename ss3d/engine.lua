@@ -234,9 +234,6 @@ function engine.newScene(renderWidth,renderHeight)
 
     -- create a canvas that will store the rendered 3d scene
     scene.threeCanvas = love.graphics.newCanvas(renderWidth, renderHeight)
-    -- create a canvas that will store a 2d layer that can be drawn on top of the 3d scene
-    -- useful for creating HUDs
-    scene.twoCanvas = love.graphics.newCanvas(renderWidth, renderHeight)
 
     -- a list of all models in the scene
     scene.modelList = {}
@@ -273,6 +270,13 @@ function engine.newScene(renderWidth,renderHeight)
         end
 
         return false
+    end
+
+    scene.changeCamera = function (self, fov, near, far)
+        self.fov = fov
+        self.nearClip = near
+        self.farClip = far
+        self.camera.perspective = TransposeMatrix(cpml.mat4.from_perspective(self.fov, self.renderWidth/self.renderHeight, self.nearClip, self.farClip))
     end
 
     -- resize output canvas to given dimensions
@@ -328,21 +332,6 @@ function engine.newScene(renderWidth,renderHeight)
         love.graphics.setColor(1,1,1)
         if drawArg == nil or drawArg == true then
             love.graphics.draw(self.threeCanvas, self.renderWidth/2,self.renderHeight/2, 0, 1,-1, self.renderWidth/2, self.renderHeight/2)
-        end
-    end
-
-    -- renders the given func to the twoCanvas
-    -- this is useful for drawing 2d HUDS and information on the screen in front of the 3d scene
-    -- will draw threeCanvas if drawArg is not given or is true (use if you want to scale the game canvas to window)
-    scene.renderFunction = function (self, func, drawArg)
-        love.graphics.setColor(1,1,1)
-        love.graphics.setCanvas(Scene.twoCanvas)
-        love.graphics.clear(0,0,0,0)
-        func()
-        love.graphics.setCanvas()
-
-        if drawArg == nil or drawArg == true then
-            love.graphics.draw(Scene.twoCanvas, self.renderWidth/2,self.renderHeight/2, 0, 1,1, self.renderWidth/2, self.renderHeight/2)
         end
     end
 

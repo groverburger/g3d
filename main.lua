@@ -115,16 +115,11 @@ function love.draw()
     love.graphics.setColor(1,1,1)
     Scene:render()
 
-    -- render a HUD
-    Scene:renderFunction(
-        function ()
-            love.graphics.setColor(0,0,0)
-            love.graphics.print("groverburger's super simple 3d engine v1.3")
-            love.graphics.print("FPS: "..love.timer.getFPS(),0,16)
+    love.graphics.setColor(0,0,0)
+    love.graphics.print("groverburger's super simple 3d engine v1.3")
+    love.graphics.print("FPS: "..love.timer.getFPS(),0,16)
 
-            if Paused then
-                love.graphics.print("PAUSED",0,32)
-            end
-        end
-    )
+    if Paused then
+        love.graphics.print("PAUSED",0,32)
+    end
 end
