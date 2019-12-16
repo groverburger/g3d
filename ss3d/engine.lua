@@ -183,50 +183,47 @@ function engine.newScene(renderWidth,renderHeight)
     local scene = {}
 
     -- define the shaders used in rendering the scene
-    scene.threeShader = love.graphics.newShader[[
+    scene.threeShader = love.graphics.newShader([[
         uniform mat4 view;
         uniform mat4 model_matrix;
         uniform mat4 model_matrix_inverse;
-        uniform float ambientLight;
-        uniform vec3 ambientVector;
-
-        varying mat4 modelView;
         varying mat4 modelViewProjection;
+        varying mat4 modelView;
         varying vec3 normal;
         varying vec3 vposition;
 
-        #ifdef VERTEX
-            attribute vec4 VertexNormal;
+        attribute vec4 VertexNormal;
 
-            vec4 position(mat4 transform_projection, vec4 vertex_position) {
-                modelView = view * model_matrix;
-                modelViewProjection = view * model_matrix * transform_projection;
+        vec4 position(mat4 transform_projection, vec4 vertex_position) {
+            modelView = view * model_matrix;
+            modelViewProjection = view * model_matrix * transform_projection;
 
-                normal = vec3(model_matrix_inverse * vec4(VertexNormal));
-                vposition = vec3(model_matrix * vertex_position);
+            normal = vec3(model_matrix_inverse * vec4(VertexNormal));
+            vposition = vec3(model_matrix * vertex_position);
 
-                return view * model_matrix * vertex_position;
+            return view * model_matrix * vertex_position;
+        }
+    ]],[[
+        varying vec3 normal;
+        uniform vec3 ambientVector;
+        uniform float ambientLight;
+
+        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+            vec4 texturecolor = Texel(texture, texture_coords);
+
+            // if the alpha here is zero just don't draw anything here
+            // otherwise alpha values of zero will render as black pixels
+            if (texturecolor.a == 0.0)
+            {
+                discard;
             }
-        #endif
 
-        #ifdef PIXEL
-            vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
-                vec4 texturecolor = Texel(texture, texture_coords);
+            float light = max(dot(normalize(ambientVector), normal), 0.0);
+            texturecolor.rgb *= max(light, ambientLight);
 
-                // if the alpha here is zero just don't draw anything here
-                // otherwise alpha values of zero will render as black pixels
-                if (texturecolor.a == 0.0)
-                {
-                    discard;
-                }
-
-                float light = max(dot(normalize(ambientVector), normal), 0);
-                texturecolor.rgb *= max(light, ambientLight);
-
-                return color*texturecolor;
-            }
-        #endif
-    ]]
+            return color*texturecolor;
+        }
+    ]])
 
 
     scene.renderWidth = renderWidth
