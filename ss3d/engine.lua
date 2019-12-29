@@ -133,7 +133,7 @@ function engine.newModel(verts, texture)
     end
 
     -- translate and rotate the Model
-    m.setTransform = function (self, coords, rotations)
+    m.setTransform = function (self, coords, rotations, scale)
         if angle == nil then
             angle = 0
             axis = cpml.vec3.unit_y
@@ -144,6 +144,9 @@ function engine.newModel(verts, texture)
             for i=1, #rotations, 2 do
                 self.transform:rotate(self.transform, rotations[i],rotations[i+1])
             end
+        end
+        if scale ~= nil then
+            self.transform:scale(self.transform, cpml.vec3(unpack(scale)))
         end
         self.transform = TransposeMatrix(self.transform)
     end
