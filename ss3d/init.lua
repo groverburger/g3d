@@ -19,6 +19,6 @@ S:::::::::::::::SS S:::::::::::::::SS 3:::::::::::::::33 D::::::::::::DDD
 
 --]]
 
-cpml = require "ss3d/cpml"
-ObjReader = require "ss3d/reader"
-return require "ss3d/engine"
+cpml = require (... .. ".cpml")
+ObjReader = require (... .. ".reader")
+return require (... .. ".engine")
