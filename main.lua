@@ -5,17 +5,24 @@
 require "g3d"
 
 function love.load()
-    Texture = love.graphics.newImage("assets/texture.png")
-    Alakazam = Model:new("assets/alakazam.obj", Texture)
-    Alakazam:setTranslation(0,-2,5)
+    Alakazam = Model:new("assets/alakazam.obj", "assets/texture.png", {0,2,5})
+    Skybox = Model:new("assets/skybox.obj", "assets/skybox.png", {0,0,0}, {0,0,0}, {500,500,500})
+    Floor = Model:new("assets/floor.obj", "assets/stone.jpg", {0,2,5}, {0,0,0}, {8,1,8})
     Timer = 0
+end
+
+function love.mousemoved(x,y, dx,dy)
+    FirstPersonCameraLook(dx,dy)
 end
 
 function love.update(dt)
     Timer = Timer + dt
-    Alakazam:setRotation(0,Timer,0)
+    Alakazam:setRotation(0,Timer,math.pi)
+    FirstPersonCameraMovement(dt)
 end
 
 function love.draw()
+    Skybox:draw()
     Alakazam:draw()
+    Floor:draw()
 end

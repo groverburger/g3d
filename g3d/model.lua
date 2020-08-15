@@ -19,13 +19,19 @@ Model.__index = Model
 -- this returns a new instance of the Model class
 -- a model must be given a .obj file or equivalent lua table, and a texture
 -- translation and rotation are 3d vectors and are optional
-function Model:new(given, texture, translation, rotation)
+function Model:new(given, texture, translation, rotation, scaleVector)
     local self = setmetatable({}, Model)
 
     -- if given is a string, use it as a path to a .obj file
     -- otherwise given is a table, use it as a model defintion
     if type(given) == "string" then
         given = LoadObjFile(given)
+    end
+
+    -- if texture is a string, use it as a path to an image file
+    -- otherwise texture is already an image, so don't bother
+    if type(texture) == "string" then
+        texture = love.graphics.newImage(texture)
     end
 
     -- if the camera isn't set up, do it now
@@ -40,6 +46,10 @@ function Model:new(given, texture, translation, rotation)
     self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
     self.mesh:setTexture(self.texture)
     self:setTransform(translation or {0,0,0}, rotation or {0,0,0})
+
+    if scaleVector then
+        self:scale(scaleVector)
+    end
 
     return self
 end

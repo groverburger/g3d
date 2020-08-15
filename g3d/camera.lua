@@ -42,7 +42,7 @@ function InitializeCamera()
         position = {0,0,0},
         direction = 0,
         pitch = 0,
-        down = {0,1,0},
+        down = {0,-1,0},
     }
 
     -- create the projection matrix from the camera
@@ -85,4 +85,44 @@ function SetCameraAndLookAt(x,y,z, xAt,yAt,zAt)
 
     -- update the camera in the shader
     CameraShader:send("viewMatrix", GetViewMatrix(Camera.position, Camera.target, Camera.down))
+end
+
+-- simple first person camera movement with WASD
+-- put this function in your love.update to use, passing in dt
+function FirstPersonCameraMovement(dt)
+    -- collect inputs
+    local mx,my = 0,0
+    if love.keyboard.isDown("w") then
+        my = my - 1
+    end
+    if love.keyboard.isDown("a") then
+        mx = mx - 1
+    end
+    if love.keyboard.isDown("s") then
+        my = my + 1
+    end
+    if love.keyboard.isDown("d") then
+        mx = mx + 1
+    end
+
+    -- add camera's direction and movement direction
+    -- then move in the resulting direction
+    if mx ~= 0 or my ~= 0 then
+        local angle = math.atan2(my,mx)
+        local speed = 0.15
+        local dx,dz = math.cos(Camera.direction + angle)*speed*dt*60, math.sin(Camera.direction + angle + math.pi)*speed*dt*60
+
+        SetCamera(Camera.position[1]+dx,0,Camera.position[3]+dz, Camera.direction,Camera.pitch)
+    end
+end
+
+-- best served with FirstPersonCameraMovement()
+-- use this in your love.mousemoved function, passing in the movements
+function FirstPersonCameraLook(dx,dy)
+    love.mouse.setRelativeMode(true)
+    local sensitivity = 1/300
+    Camera.direction = Camera.direction + dx*sensitivity
+    Camera.pitch = math.max(math.min(Camera.pitch - dy*sensitivity, math.pi*0.5), math.pi*-0.5)
+
+    SetCamera(Camera.position[1],Camera.position[2],Camera.position[3], Camera.direction,Camera.pitch)
 end
