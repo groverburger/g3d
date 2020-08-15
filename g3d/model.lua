@@ -107,6 +107,10 @@ function Model:draw()
     love.graphics.setShader()
 end
 
+local function dotProd(a1,a2,a3, b1,b2,b3)
+    return a1*b1 + a2*b2 + a3*b3
+end
+
 -- check if a vector has collided with this model
 -- takes two 3d vectors as arguments, sourcePoint and directionVector
 -- returns length of vector from sourcePoint to collisionPoint
