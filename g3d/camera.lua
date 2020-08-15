@@ -49,16 +49,19 @@ function InitializeCamera()
     -- and send it to the shader
     CameraShader:send("projectionMatrix", GetProjectionMatrix(Camera.fov, Camera.nearClip, Camera.farClip, Camera.aspectRatio))
     
-    CameraLookInDirection(0, 0)
+    SetCamera(0,0,0, 0,0)
 
     -- so that far polygons don't overlap near polygons
     love.graphics.setDepthMode("lequal", true)
 end
 
-function CameraLookInDirection(direction, pitch)
-    Camera.direction = direction
-    Camera.pitch = pitch or 0
+-- move and rotate the camera, given a point and a direction and a pitch (vertical direction)
+function SetCamera(x,y,z, direction, pitch)
+    Camera.position = {x,y,z}
+    Camera.direction = direction or Camera.direction
+    Camera.pitch = pitch or Camera.pitch
 
+    -- convert the direction and pitch into a target point
     local sign = math.cos(Camera.pitch)
     if sign > 0 then
         sign = 1
@@ -69,6 +72,8 @@ function CameraLookInDirection(direction, pitch)
     end
     local cosPitch = sign*math.max(math.abs(math.cos(Camera.pitch)), 0.001)
     local target = {Camera.position[1]+math.sin(Camera.direction)*cosPitch, Camera.position[2]-math.sin(Camera.pitch), Camera.position[3]+math.cos(Camera.direction)*cosPitch}
+    Camera.target = target
 
-    CameraShader:send("viewMatrix", GetViewMatrix(Camera.position, target, Camera.down))
+    -- update the camera in the shader
+    CameraShader:send("viewMatrix", GetViewMatrix(Camera.position, Camera.target, Camera.down))
 end

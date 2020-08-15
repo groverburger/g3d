@@ -25,7 +25,7 @@ require "g3d"
 function love.load()
     Texture = love.graphics.newImage("assets/texture.png")
     Alakazam = Model:new("assets/alakazam.obj", Texture)
-    Alakazam:setTranslation(5,-2,0)
+    Alakazam:setTranslation(0,-2,5)
     Timer = 0
 end
 
@@ -39,5 +39,9 @@ function love.draw()
 end
 ```
 
-For more information, check out the model.lua file.
-The code is fully commented and designed to be readable.
+- create a model with Model:new(obj, texture) passing in the .obj and texture
+- translate and rotate the model with Model:setTranslation(x,y,z) and Model:setRotation(x,y,z)
+- move and rotate the camera with SetCamera(x,y,z, direction,pitch)
+
+For more information, check out the model.lua and camera.lua files.
+The code is commented and designed to be readable.
