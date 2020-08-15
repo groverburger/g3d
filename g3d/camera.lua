@@ -92,6 +92,7 @@ end
 function FirstPersonCameraMovement(dt)
     -- collect inputs
     local mx,my = 0,0
+    local cameraMoved = false
     if love.keyboard.isDown("w") then
         my = my - 1
     end
@@ -104,6 +105,14 @@ function FirstPersonCameraMovement(dt)
     if love.keyboard.isDown("d") then
         mx = mx + 1
     end
+    if love.keyboard.isDown("space") then
+        Camera.position[2] = Camera.position[2] - 0.15*dt*60
+        cameraMoved = true
+    end
+    if love.keyboard.isDown("lshift") then
+        Camera.position[2] = Camera.position[2] + 0.15*dt*60
+        cameraMoved = true
+    end
 
     -- add camera's direction and movement direction
     -- then move in the resulting direction
@@ -112,7 +121,13 @@ function FirstPersonCameraMovement(dt)
         local speed = 0.15
         local dx,dz = math.cos(Camera.direction + angle)*speed*dt*60, math.sin(Camera.direction + angle + math.pi)*speed*dt*60
 
-        SetCamera(Camera.position[1]+dx,0,Camera.position[3]+dz, Camera.direction,Camera.pitch)
+        Camera.position[1] = Camera.position[1] + dx
+        Camera.position[3] = Camera.position[3] + dz
+        cameraMoved = true
+    end
+
+    if cameraMoved then
+        SetCamera(Camera.position[1],Camera.position[2],Camera.position[3], Camera.direction,Camera.pitch)
     end
 end
 

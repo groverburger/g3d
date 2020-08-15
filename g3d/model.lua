@@ -18,8 +18,8 @@ Model.__index = Model
 
 -- this returns a new instance of the Model class
 -- a model must be given a .obj file or equivalent lua table, and a texture
--- translation and rotation are 3d vectors and are optional
-function Model:new(given, texture, translation, rotation, scaleVector)
+-- translation, rotation, and scale are all 3d vectors and are all optional
+function Model:new(given, texture, translation, rotation, scale)
     local self = setmetatable({}, Model)
 
     -- if given is a string, use it as a path to a .obj file
@@ -47,8 +47,9 @@ function Model:new(given, texture, translation, rotation, scaleVector)
     self.mesh:setTexture(self.texture)
     self:setTransform(translation or {0,0,0}, rotation or {0,0,0})
 
-    if scaleVector then
-        self:scale(scaleVector)
+    -- if a scale was given, resize the model to the given scale
+    if scale then
+        self:scale(scale)
     end
 
     return self
