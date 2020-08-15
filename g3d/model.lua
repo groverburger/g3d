@@ -13,8 +13,6 @@ Model = {
         {"VertexNormal", "float", 3},
         {"VertexColor", "byte", 4},
     },
-
-    shader = nil,
 }
 Model.__index = Model
 
@@ -30,53 +28,14 @@ function Model:new(given, texture, translation, rotation)
         given = LoadObjFile(given)
     end
 
-    if not Model.shader then
-        ----------------------------------------------------------------------------------------------------
-        -- initialize the 3d shader
-        ----------------------------------------------------------------------------------------------------
-
-        Model.shader = love.graphics.newShader [[
-            uniform mat4 projectionMatrix;
-            uniform mat4 modelMatrix;
-            uniform mat4 viewMatrix;
-
-            #ifdef VERTEX
-                vec4 position(mat4 transform_projection, vec4 vertex_position)
-                {
-                    return projectionMatrix * viewMatrix * modelMatrix * vertex_position;
-                }
-            #endif
-
-            #ifdef PIXEL
-                vec4 effect(vec4 color, Image tex, vec2 texcoord, vec2 pixcoord)
-                {
-                    vec4 texcolor = Texel(tex, texcoord);
-                    if (texcolor.a == 0.0) { discard; }
-                    return vec4(texcolor);
-                }
-            #endif
-        ]]
-
-        ----------------------------------------------------------------------------------------------------
-        -- initialize the shader with a basic camera
-        ----------------------------------------------------------------------------------------------------
-
-        -- this says that the camera has
-            -- a FOV of 90 degrees (pi/2 in radians)
-            -- a near clip plane of 0.01 units (very close to the camera)
-            -- a far clip plane of 1000 units (very far from the camera)
-        Model.shader:send("projectionMatrix", GetProjectionMatrix(math.pi/2, 0.01, 1000, 1))
-        -- this says that the camera is
-            -- at 0,0,0
-            -- looking at 1,0,0 (down the x-axis)
-            -- oriented so that negative y is upwards
-        Model.shader:send("viewMatrix", GetViewMatrix({0,0,0}, {1,0,0}, {0,1,0}))
-
-        -- so that far polygons don't overlap near polygons
-        love.graphics.setDepthMode("lequal", true)
+    -- if the camera isn't set up, do it now
+    if not CameraShader then
+        InitializeCamera()
     end
 
+
     -- initialize my variables
+    self.shader = CameraShader
     self.verts = given
     self.texture = texture
     self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
@@ -184,4 +143,10 @@ function Model:vectorIntersection(sourcePoint, directionVector)
     end
 
     return length, where
+end
+
+function CameraLookAtPoint()
+end
+
+function CameraLookInDirection()
 end

@@ -1,6 +1,6 @@
 # G3D
 
-groverburger's 3D engine (g3d) simplifies love2d's 3d capabilities into one easy to use package.
+groverburger's 3D engine (g3d) simplifies love2d's 3d capabilities to be as simple as possible.
 
 ![pic1](alakazam.gif)
 

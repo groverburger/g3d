@@ -21,3 +21,4 @@
 require(... .. "/matrices")
 require(... .. "/objloader")
 require(... .. "/model")
+require(... .. "/camera")

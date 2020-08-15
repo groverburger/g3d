@@ -7,7 +7,7 @@ require "g3d"
 function love.load()
     Texture = love.graphics.newImage("assets/texture.png")
     Alakazam = Model:new("assets/alakazam.obj", Texture)
-    Alakazam:setTranslation(5,-2,0)
+    Alakazam:setTranslation(0,-2,5)
     Timer = 0
 end
 
