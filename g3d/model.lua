@@ -144,9 +144,3 @@ function Model:vectorIntersection(sourcePoint, directionVector)
 
     return length, where
 end
-
-function CameraLookAtPoint()
-end
-
-function CameraLookInDirection()
-end
