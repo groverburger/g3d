@@ -33,7 +33,6 @@ function Model:new(given, texture, translation, rotation)
         InitializeCamera()
     end
 
-
     -- initialize my variables
     self.shader = CameraShader
     self.verts = given

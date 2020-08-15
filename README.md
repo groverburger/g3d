@@ -41,7 +41,7 @@ end
 
 - create a model with Model:new(obj, texture) passing in the .obj and texture
 - translate and rotate the model with Model:setTranslation(x,y,z) and Model:setRotation(x,y,z)
-- move and rotate the camera with SetCamera(x,y,z, direction,pitch)
+- move and rotate the camera with SetCamera(x,y,z, direction,pitch) or SetCameraAndLookAt(x,y,z, xAt,yAt,zAt)
 
 For more information, check out the model.lua and camera.lua files.
 The code is commented and designed to be readable.
