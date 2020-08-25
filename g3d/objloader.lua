@@ -26,7 +26,7 @@ end
 
 -- give path of file
 -- returns a lua table representation
-return function (path)
+function LoadObjFile(path)
     local verts = {}
     local faces = {}
     local uvs = {}
@@ -119,3 +119,4 @@ return function (path)
 
     return compiled
 end
+

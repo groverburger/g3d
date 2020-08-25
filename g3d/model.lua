@@ -16,8 +16,6 @@ Model = {
 }
 Model.__index = Model
 
-local loadObjFile = require(G3D_PATH .. "/objloader")
-
 -- this returns a new instance of the Model class
 -- a model must be given a .obj file or equivalent lua table, and a texture
 -- translation, rotation, and scale are all 3d vectors and are all optional
@@ -27,7 +25,7 @@ function Model:new(given, texture, translation, rotation, scale)
     -- if given is a string, use it as a path to a .obj file
     -- otherwise given is a table, use it as a model defintion
     if type(given) == "string" then
-        given = loadObjFile(given)
+        given = LoadObjFile(given)
     end
 
     -- if texture is a string, use it as a path to an image file
