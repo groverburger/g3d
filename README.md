@@ -1,19 +1,20 @@
-# G3D
-
-groverburger's 3D engine (g3d) simplifies love2d's 3d capabilities to be as simple as possible.
+![g3d_logo](https://user-images.githubusercontent.com/19754251/91235387-502bb980-e6ea-11ea-9d12-74f762f69859.png)
+groverburger's 3D engine (g3d) simplifies [LÖVE](http://love2d.org)'s 3d capabilities to be as simple as possible.
 
 ![pic1](alakazam.gif)
 
-### Features:
+## Features
+
 - 3D Model rendering
 - .obj file loading
-- Simple collision handling
 - Basic first person movement controls
+- Functions for simple collision handling
 
-### Installation
+## Installation
+
 Add the g3d folder to your project.
 
-### Usage
+## Usage
 
 The entire main.lua file for the demo shown is 28 lines, as shown here:
 ```lua
@@ -47,10 +48,12 @@ function love.draw()
 end
 ```
 
-- create a model with Model:new(obj, texture) passing in the .obj and texture
-- translate and rotate the model with Model:setTranslation(x,y,z) and Model:setRotation(x,y,z)
-- move and rotate the camera with SetCamera(x,y,z, direction,pitch) or SetCameraAndLookAt(x,y,z, xAt,yAt,zAt)
-- use basic first person movement with FirstPersonCameraMovement(dt) and FirstPersonCameraLook(dx,dy)
+## Functionality
 
-For more information, check out the model.lua and camera.lua files.
+- Create `Model`s with `Model:new(obj, texture)` passing in a path to a .obj file and a LÖVE image file
+- Translate and rotate the `Model` with `Model:setTranslation(x,y,z)` and `Model:setRotation(x,y,z)`
+- Move and rotate the `Camera` with `SetCamera(x,y,z, direction,pitch)` or `SetCameraAndLookAt(x,y,z, xAt,yAt,zAt)`
+- Use basic first person movement with `FirstPersonCameraMovement(dt)` and `FirstPersonCameraLook(dx,dy)`
+
+For more information, check out the `model.lua` and `camera.lua` files.
 The code is commented and designed to be readable.
