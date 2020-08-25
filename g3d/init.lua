@@ -18,7 +18,7 @@
 -- load in all the required files
 ----------------------------------------------------------------------------------------------------
 
-require(... .. "/matrices")
-require(... .. "/objloader")
-require(... .. "/model")
-require(... .. "/camera")
+G3D_PATH = ...
+require(G3D_PATH .. "/matrices")
+require(G3D_PATH .. "/model")
+require(G3D_PATH .. "/camera")
