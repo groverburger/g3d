@@ -119,4 +119,3 @@ function LoadObjFile(path)
 
     return compiled
 end
-
