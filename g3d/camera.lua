@@ -37,7 +37,7 @@ function InitializeCamera()
         fov = math.pi/2,
         nearClip = 0.01,
         farClip = 1000,
-        aspectRatio = 1,
+        aspectRatio = love.graphics.getWidth()/love.graphics.getHeight(),
 
         position = {0,0,0},
         direction = 0,

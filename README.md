@@ -2,22 +2,24 @@
 
 groverburger's 3D engine (g3d) simplifies [LÖVE](http://love2d.org)'s 3d capabilities to be as simple as possible.
 
-![pic1](alakazam.gif)
+![pic1](demo.gif)
 
 ## Features
 
 - 3D Model rendering
 - .obj file loading
-- Basic first person movement controls
+- Basic first person movement and camera controls
+- Perspective and orthographic projections
 - Functions for simple collision handling
+- Simple, commented, and organized
 
 ## Installation
 
-Add the g3d folder to your project.
+Add the `g3d` subfolder folder to your project, and require it in `main.lua`.
 
 ## Usage
 
-The entire main.lua file for the demo shown is 28 lines, as shown here:
+The entire `main.lua` file for the demo shown is 30 lines, as shown here:
 ```lua
 -- written by groverbuger for g3d
 -- august 2020
@@ -26,10 +28,9 @@ The entire main.lua file for the demo shown is 28 lines, as shown here:
 require "g3d"
 
 function love.load()
-    Alakazam = Model:new("assets/alakazam.obj", "assets/texture.png", {0,2,5})
-    Skybox = Model:new("assets/skybox.obj", "assets/skybox.png", {0,0,0}, {0,0,0}, {500,500,500})
-    Floor = Model:new("assets/floor.obj", "assets/stone.jpg", {0,2,5}, {0,0,0}, {8,1,8})
-    Timer = 0
+    Earth = Model:new("assets/sphere.obj", "assets/earth.png", {0,0,4}, nil, {-1,1,1})
+    Moon = Model:new("assets/sphere.obj", "assets/moon.png", {5,0,4}, nil, {-0.5,0.5,0.5})
+    Background = Model:new("assets/soccerball.obj", "assets/skybox.png", {0,0,0}, nil, {500,500,500})
 end
 
 function love.mousemoved(x,y, dx,dy)
@@ -37,15 +38,18 @@ function love.mousemoved(x,y, dx,dy)
 end
 
 function love.update(dt)
-    Timer = Timer + dt
-    Alakazam:setRotation(0,Timer,math.pi)
+    Timer = Timer and Timer + dt or 0
+    Moon:setTranslation(math.cos(Timer)*5, 0, math.sin(Timer)*5 +4)
+    Moon:setRotation(0,-1*Timer,0)
     FirstPersonCameraMovement(dt)
 end
 
 function love.draw()
-    Skybox:draw()
-    Alakazam:draw()
-    Floor:draw()
+    Earth:draw()
+    Moon:draw()
+    love.graphics.setWireframe(true)
+    Background:draw()
+    love.graphics.setWireframe(false)
 end
 ```
 
@@ -57,4 +61,3 @@ end
 - Use basic first person movement with `FirstPersonCameraMovement(dt)` and `FirstPersonCameraLook(dx,dy)`
 
 For more information, check out the `model.lua` and `camera.lua` files.
-The code is commented and designed to be readable.
