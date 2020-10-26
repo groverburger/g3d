@@ -45,12 +45,7 @@ function Model:new(given, texture, translation, rotation, scale)
     self.texture = texture
     self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
     self.mesh:setTexture(self.texture)
-    self:setTransform(translation or {0,0,0}, rotation or {0,0,0})
-
-    -- if a scale was given, resize the model to the given scale
-    if scale then
-        self:scale(scale)
-    end
+    self:setTransform(translation or {0,0,0}, rotation or {0,0,0}, scale or {1,1,1})
 
     return self
 end
@@ -79,34 +74,35 @@ function Model:makeNormals()
     end
 end
 
--- resize model based on a given 3d vector
-function Model:scale(scaleVector)
-    for i,v in pairs(self.verts) do
-        v[1] = v[1] * scaleVector[1]
-        v[2] = v[2] * scaleVector[2]
-        v[3] = v[3] * scaleVector[3]
-    end
-    self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
-    self.mesh:setTexture(self.texture)
-end
-
 -- move and rotate given two 3d vectors
-function Model:setTransform(translation, rotation)
+function Model:setTransform(translation, rotation, scale)
     self.translation = translation or {0,0,0}
     self.rotation = rotation or {0,0,0}
-    self.matrix = GetTransformationMatrix(self.translation, self.rotation)
+    self.scale = scale or {1,1,1}
+    self:updateMatrix()
 end
 
 -- move given one 3d vector
 function Model:setTranslation(tx,ty,tz)
     self.translation = {tx,ty,tz}
-    self.matrix = GetTransformationMatrix(self.translation, self.rotation)
+    self:updateMatrix()
 end
 
 -- rotate given one 3d vector
 function Model:setRotation(rx,ry,rz)
     self.rotation = {rx,ry,rz}
-    self.matrix = GetTransformationMatrix(self.translation, self.rotation)
+    self:updateMatrix()
+end
+
+-- resize model's matrix based on a given 3d vector
+function Model:setScale(sx,sy,sz)
+    self.scale = {sx,sy,sz}
+    self:updateMatrix()
+end
+
+-- update the model's transformation matrix
+function Model:updateMatrix()
+    self.matrix = GetTransformationMatrix(self.translation, self.rotation, self.scale)
 end
 
 -- draw the model

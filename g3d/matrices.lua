@@ -10,7 +10,7 @@
 
 -- returns a transformation matrix
 -- translation and rotation are 3d vectors
-function GetTransformationMatrix(translation, rotation)
+function GetTransformationMatrix(translation, rotation, scale)
     local ret = IdentityMatrix()
 
     -- translations
@@ -42,6 +42,13 @@ function GetTransformationMatrix(translation, rotation)
     rz[5] = math.sin(rotation[3])
     rz[6] = math.cos(rotation[3])
     ret = MatrixMult(ret, rz)
+
+    -- scale
+    local sm = IdentityMatrix()
+    sm[1] = scale[1]
+    sm[6] = scale[2]
+    sm[11] = scale[3]
+    ret = MatrixMult(ret, sm)
 
     return ret
 end

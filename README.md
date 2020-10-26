@@ -19,10 +19,10 @@ Add the `g3d` subfolder folder to your project, and require it in `main.lua`.
 
 ## Usage
 
-The entire `main.lua` file for the demo shown is 30 lines, as shown here:
+The entire `main.lua` file for the demo shown is under 30 lines, as shown here:
 ```lua
 -- written by groverbuger for g3d
--- august 2020
+-- october 2020
 -- MIT license
 
 require "g3d"
@@ -30,7 +30,8 @@ require "g3d"
 function love.load()
     Earth = Model:new("assets/sphere.obj", "assets/earth.png", {0,0,4}, nil, {-1,1,1})
     Moon = Model:new("assets/sphere.obj", "assets/moon.png", {5,0,4}, nil, {-0.5,0.5,0.5})
-    Background = Model:new("assets/soccerball.obj", "assets/skybox.png", {0,0,0}, nil, {500,500,500})
+    Background = Model:new("assets/sphere.obj", "assets/starfield.png", {0,0,0}, nil, {500,500,500})
+    Timer = 0
 end
 
 function love.mousemoved(x,y, dx,dy)
@@ -38,7 +39,7 @@ function love.mousemoved(x,y, dx,dy)
 end
 
 function love.update(dt)
-    Timer = Timer and Timer + dt or 0
+    Timer = Timer + dt
     Moon:setTranslation(math.cos(Timer)*5, 0, math.sin(Timer)*5 +4)
     Moon:setRotation(0,-1*Timer,0)
     FirstPersonCameraMovement(dt)
@@ -47,9 +48,7 @@ end
 function love.draw()
     Earth:draw()
     Moon:draw()
-    love.graphics.setWireframe(true)
     Background:draw()
-    love.graphics.setWireframe(false)
 end
 ```
 
