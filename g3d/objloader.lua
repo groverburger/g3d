@@ -61,6 +61,7 @@ function LoadObjFile(path)
         -- the arguments a point takes is v,vt,vn
         if words[1] == "f" then
             local store = {}
+            assert(#words == 4, "Faces in "..path.." must be triangulated before they can be used in g3d!")
             for i=2, #words do
                 local num = ""
                 local word = words[i]
