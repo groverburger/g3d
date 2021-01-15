@@ -34,13 +34,8 @@ function Model:new(given, texture, translation, rotation, scale)
         texture = love.graphics.newImage(texture)
     end
 
-    -- if the camera isn't set up, do it now
-    if not CameraShader then
-        InitializeCamera()
-    end
-
     -- initialize my variables
-    self.shader = CameraShader
+    self.shader = G3DShader
     self.verts = given
     self.texture = texture
     self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
