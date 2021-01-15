@@ -62,6 +62,7 @@ function GetProjectionMatrix(fov, near, far, aspectRatio)
     local bottom = -1*top
     local right = top * aspectRatio
     local left = -1*right
+
     return {
         2*near/(right-left), 0, (right+left)/(right-left), 0,
         0, 2*near/(top-bottom), (top+bottom)/(top-bottom), 0,
@@ -79,6 +80,7 @@ function GetOrthoMatrix(fov, size, near, far, aspectRatio)
     local bottom = -1*top
     local right = top * aspectRatio
     local left = -1*right
+
     return {
         2/(right-left), 0, 0, -1*(right+left)/(right-left),
         0, 2/(top-bottom), 0, -1*(top+bottom)/(top-bottom),
@@ -174,63 +176,4 @@ function TransposeMatrix(m)
         GetMatrixXY(m, 3,1), GetMatrixXY(m, 3,2), GetMatrixXY(m, 3,3), GetMatrixXY(m, 3,4),
         GetMatrixXY(m, 4,1), GetMatrixXY(m, 4,2), GetMatrixXY(m, 4,3), GetMatrixXY(m, 4,4),
     }
-end
-
-----------------------------------------------------------------------------------------------------
--- detect collisions between a model and a vector
-----------------------------------------------------------------------------------------------------
--- these functions are used for the Model:vectorIntersection function
-
-local function subtractVector(v1,v2,v3, v4,v5,v6)
-    return v1-v4, v2-v5, v3-v6
-end
-local function crossProd(a1,a2,a3, b1,b2,b3)
-    return a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - a2*b1
-end
-local function dotProd(a1,a2,a3, b1,b2,b3)
-    return a1*b1 + a2*b2 + a3*b3
-end
-local DBL_EPSILON = 2.2204460492503131e-16
-
--- taken and modified for efficiency from Cirno's Perfect Math Library
--- using just numbers and not vector tables for efficiency
-function FastRayTriangle(p1,p2,p3, d1,d2,d3, t11,t12,t13,t21,t22,t23,t31,t32,t33)
-    local e11,e12,e13 = subtractVector(t21,t22,t23, t11,t12,t13)
-    local e21,e22,e23 = subtractVector(t31,t32,t33, t11,t12,t13)
-    local h1,h2,h3 = crossProd(d1,d2,d3, e21,e22,e23)
-    local a = dotProd(h1,h2,h3, e11,e12,e13)
-
-    -- if a is too close to 0, ray does not intersect triangle
-    if math.abs(a) <= DBL_EPSILON then
-        return false
-    end
-
-    local f = 1 / a
-    local s1,s2,s3 = subtractVector(p1,p2,p3, t11,t12,t13)
-    local u = dotProd(s1,s2,s3, h1,h2,h3) * f
-
-    -- ray does not intersect triangle
-    if u < 0 or u > 1 then
-        return false
-    end
-
-    local q1,q2,q3 = crossProd(s1,s2,s3, e11,e12,e13)
-    local v = dotProd(d1,d2,d3, q1,q2,q3) * f
-
-    -- ray does not intersect triangle
-    if v < 0 or u + v > 1 then
-        return false
-    end
-
-    -- at this stage we can compute t to find out where
-    -- the intersection point is on the line
-    local t = dotProd(q1,q2,q3, e21,e22,e23) * f
-
-    -- return position of intersection and distance from ray origin
-    if t >= DBL_EPSILON then
-        return t, p1 + d1*t,p2 + d2*t,p3 + d3*t
-    end
-
-    -- ray does not intersect triangle
-    return false
 end

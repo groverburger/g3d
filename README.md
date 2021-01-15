@@ -10,7 +10,6 @@ groverburger's 3D engine (g3d) simplifies [LÖVE](http://love2d.org)'s 3d capabi
 - .obj file loading
 - Basic first person movement and camera controls
 - Perspective and orthographic projections
-- Functions for simple collision handling
 - Simple, commented, and organized
 
 ## Installation
@@ -60,3 +59,9 @@ end
 - Use basic first person movement with `FirstPersonCameraMovement(dt)` and `FirstPersonCameraLook(dx,dy)`
 
 For more information, check out the `model.lua` and `camera.lua` files.
+
+## Collision Detection
+
+Please use the [CPML](https://github.com/excessive/cpml) library or refer to [3DreamEngine](https://github.com/3dreamengine/3DreamEngine) for their 3D collision code.
+Mozilla also has a [nice article](https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection) on basic 3D collision detection.
+g3d no longer offers collision detection, instead focusing only on making 3D rendering as simple as possible.
