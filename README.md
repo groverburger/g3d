@@ -21,10 +21,10 @@ View the original forum post [here](https://love2d.org/forums/viewtopic.php?f=5&
 
 ## Games made with g3d
 
-[Hoarder's Horrible House of Stuff](https://alesan99.itch.io/hoarders-horrible-house-of-stuff) by alesan99
+[Hoarder's Horrible House of Stuff](https://alesan99.itch.io/hoarders-horrible-house-of-stuff) by alesan99<br/>
 ![Hoarder's Gif](https://img.itch.zone/aW1hZ2UvODY2NDc3LzQ4NjYzMDcuZ2lm/original/byZGOE.gif)
 
-[Flamerunner](https://groverburger.itch.io/flamerunner) by groverburger
+[Flamerunner](https://groverburger.itch.io/flamerunner) by groverburger<br/>
 ![Flamerunner Gif](https://img.itch.zone/aW1nLzMzMDU0NzMuZ2lm/original/%2BM%2F78x.gif)
 
 ## Usage
