@@ -31,7 +31,7 @@ For more information, check out the [g3d wiki](https://github.com/groverburger/g
 
 ## Demo Code
 
-The entire `main.lua` file for the demo shown is under 30 lines, as shown here:
+The entire `main.lua` file for the Earth and Moon demo is under 30 lines, as shown here:
 ```lua
 -- written by groverbuger for g3d
 -- october 2020
@@ -63,3 +63,7 @@ function love.draw()
     Background:draw()
 end
 ```
+
+## Additional Help and FAQ 
+
+Check out the [g3d wiki](https://github.com/groverburger/g3d/wiki)!

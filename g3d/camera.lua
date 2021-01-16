@@ -20,8 +20,9 @@ function SetCamera(x,y,z, direction,pitch)
         sign = 0
     end
     local cosPitch = sign*math.max(math.abs(math.cos(Camera.pitch)), 0.001)
-    local target = {Camera.position[1]+math.sin(Camera.direction)*cosPitch, Camera.position[2]-math.sin(Camera.pitch), Camera.position[3]+math.cos(Camera.direction)*cosPitch}
-    Camera.target = target
+    Camera.target[1] = Camera.position[1]+math.sin(Camera.direction)*cosPitch
+    Camera.target[2] = Camera.position[2]-math.sin(Camera.pitch)
+    Camera.target[3] = Camera.position[3]+math.cos(Camera.direction)*cosPitch
 
     -- update the camera in the shader
     G3DShader:send("viewMatrix", GetViewMatrix(Camera.position, Camera.target, Camera.down))
