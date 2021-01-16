@@ -1,6 +1,7 @@
 ![g3d_logo](https://user-images.githubusercontent.com/19754251/91235387-502bb980-e6ea-11ea-9d12-74f762f69859.png)
 
 groverburger's 3D engine (g3d) simplifies [LÖVE](http://love2d.org)'s 3d capabilities to be as simple as possible.
+View the original forum post [here](https://love2d.org/forums/viewtopic.php?f=5&t=86350).
 
 ![pic1](demo.gif)
 
@@ -12,9 +13,19 @@ groverburger's 3D engine (g3d) simplifies [LÖVE](http://love2d.org)'s 3d capabi
 - Perspective and orthographic projections
 - Simple, commented, and organized
 
-## Installation
+## Getting Started
 
-Add the `g3d` subfolder folder to your project, and require it in `main.lua`.
+1. Download the latest release version
+2. Add the `g3d` subfolder folder to your project
+3. Add `require "g3d"` to the top of your `main.lua` file
+
+## Games made with g3d
+
+[Hoarder's Horrible House of Stuff](https://alesan99.itch.io/hoarders-horrible-house-of-stuff) by alesan99
+![Hoarder's Gif](https://img.itch.zone/aW1hZ2UvODY2NDc3LzQ4NjYzMDcuZ2lm/original/byZGOE.gif)
+
+[Flamerunner](https://groverburger.itch.io/flamerunner) by groverburger
+![Flamerunner Gif](https://img.itch.zone/aW1nLzMzMDU0NzMuZ2lm/original/%2BM%2F78x.gif)
 
 ## Usage
 
@@ -62,6 +73,8 @@ For more information, check out the `model.lua` and `camera.lua` files.
 
 ## Collision Detection
 
-Please use the [CPML](https://github.com/excessive/cpml) library or refer to [3DreamEngine](https://github.com/3dreamengine/3DreamEngine) for their 3D collision code.
+Please use the [CPML library](https://github.com/excessive/cpml) or refer to [3DreamEngine](https://github.com/3dreamengine/3DreamEngine) for their 3D collision code.
+
 Mozilla also has a [nice article](https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection) on basic 3D collision detection.
-g3d no longer offers collision detection, instead focusing only on making 3D rendering as simple as possible.
+
+g3d no longer offers collision detection, instead focusing only on making 3D rendering as simple as possible. Some simple integrated solution may come in a later version, however.
