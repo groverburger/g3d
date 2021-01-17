@@ -15,7 +15,7 @@ local matrices = {}
 -- returns a transformation matrix
 -- translation and rotation are 3d vectors
 function matrices.getTransformationMatrix(translation, rotation, scale)
-    local ret = matrices.identityMatrix()
+    local ret = matrices.getIdentityMatrix()
 
     -- translations
     ret[4] = translation[1]
@@ -24,35 +24,35 @@ function matrices.getTransformationMatrix(translation, rotation, scale)
 
     -- rotations
     -- x
-    local rx = matrices.identityMatrix()
+    local rx = matrices.getIdentityMatrix()
     rx[6] = math.cos(rotation[1])
     rx[7] = -1*math.sin(rotation[1])
     rx[10] = math.sin(rotation[1])
     rx[11] = math.cos(rotation[1])
-    ret = matrices.matrixMultiply(ret, rx)
+    ret = matrices.multiply(ret, rx)
 
     -- y
-    local ry = matrices.identityMatrix()
+    local ry = matrices.getIdentityMatrix()
     ry[1] = math.cos(rotation[2])
     ry[3] = math.sin(rotation[2])
     ry[9] = -math.sin(rotation[2])
     ry[11] = math.cos(rotation[2])
-    ret = matrices.matrixMultiply(ret, ry)
+    ret = matrices.multiply(ret, ry)
 
     -- z
-    local rz = matrices.identityMatrix()
+    local rz = matrices.getIdentityMatrix()
     rz[1] = math.cos(rotation[3])
     rz[2] = -math.sin(rotation[3])
     rz[5] = math.sin(rotation[3])
     rz[6] = math.cos(rotation[3])
-    ret = matrices.matrixMultiply(ret, rz)
+    ret = matrices.multiply(ret, rz)
 
     -- scale
-    local sm = matrices.identityMatrix()
+    local sm = matrices.getIdentityMatrix()
     sm[1] = scale[1]
     sm[6] = scale[2]
     sm[11] = scale[3]
-    ret = matrices.matrixMultiply(ret, sm)
+    ret = matrices.multiply(ret, sm)
 
     return ret
 end
@@ -114,27 +114,27 @@ end
 -- matrices are just 16 numbers in table, representing a 4x4 matrix
 -- an identity matrix is defined as {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}
 
-function matrices.identityMatrix()
+function matrices.getIdentityMatrix()
     return {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}
 end
 
 -- i find rows and columns confusing, so i use coordinate pairs instead
 -- this returns a value of a matrix at a specific coordinate
-function matrices.getMatrixXY(matrix, x,y)
+function matrices.getMatrixValueAt(matrix, x,y)
     return matrix[x + (y-1)*4]
 end
 
 -- return the matrix that results from the two given matrices multiplied together
-function matrices.matrixMultiply(a,b)
+function matrices.multiply(a,b)
     local ret = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}
 
     local i = 1
     for y=1, 4 do
         for x=1, 4 do
-            ret[i] = ret[i] + matrices.getMatrixXY(a,1,y)*matrices.getMatrixXY(b,x,1)
-            ret[i] = ret[i] + matrices.getMatrixXY(a,2,y)*matrices.getMatrixXY(b,x,2)
-            ret[i] = ret[i] + matrices.getMatrixXY(a,3,y)*matrices.getMatrixXY(b,x,3)
-            ret[i] = ret[i] + matrices.getMatrixXY(a,4,y)*matrices.getMatrixXY(b,x,4)
+            ret[i] = ret[i] + matrices.getMatrixValueAt(a,1,y)*matrices.getMatrixValueAt(b,x,1)
+            ret[i] = ret[i] + matrices.getMatrixValueAt(a,2,y)*matrices.getMatrixValueAt(b,x,2)
+            ret[i] = ret[i] + matrices.getMatrixValueAt(a,3,y)*matrices.getMatrixValueAt(b,x,3)
+            ret[i] = ret[i] + matrices.getMatrixValueAt(a,4,y)*matrices.getMatrixValueAt(b,x,4)
             i = i + 1
         end
     end
