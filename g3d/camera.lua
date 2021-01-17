@@ -41,7 +41,7 @@ function camera.lookAt(x,y,z, xAt,yAt,zAt)
 end
 
 -- move and rotate the camera, given a point and a direction and a pitch (vertical direction)
-function camera.lookTowards(x,y,z, directionTowards,pitchTowards)
+function camera.lookInDirection(x,y,z, directionTowards,pitchTowards)
     camera.position[1] = x
     camera.position[2] = y
     camera.position[3] = z
@@ -121,7 +121,7 @@ function camera.firstPersonMovement(dt)
     -- update the camera's in the shader
     -- only if the camera moved, for a slight performance benefit
     if cameraMoved then
-        camera.lookTowards(camera.position[1],camera.position[2],camera.position[3], fpsController.direction,fpsController.pitch)
+        camera.lookInDirection(camera.position[1],camera.position[2],camera.position[3], fpsController.direction,fpsController.pitch)
     end
 end
 
@@ -134,7 +134,7 @@ function camera.firstPersonLook(dx,dy)
     fpsController.direction = fpsController.direction + dx*sensitivity
     fpsController.pitch = math.max(math.min(fpsController.pitch - dy*sensitivity, math.pi*0.5), math.pi*-0.5)
 
-    camera.lookTowards(camera.position[1],camera.position[2],camera.position[3], fpsController.direction,fpsController.pitch)
+    camera.lookInDirection(camera.position[1],camera.position[2],camera.position[3], fpsController.direction,fpsController.pitch)
 end
 
 return camera
