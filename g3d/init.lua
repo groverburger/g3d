@@ -14,6 +14,8 @@
    \_/__/                
 --]]
 
+-- add the path to g3d to the global namespace
+-- so submodules can know how to load their dependencies
 G3D_PATH = ...
 
 local g3d = {}
@@ -23,5 +25,9 @@ g3d.camera = require(G3D_PATH .. "/camera")
 
 -- so that far polygons don't overlap near polygons
 love.graphics.setDepthMode("lequal", true)
+
+-- get rid of G3D_PATH from the global namespace
+-- so the end user doesn't have to worry about any globals
+G3D_PATH = nil
 
 return g3d
