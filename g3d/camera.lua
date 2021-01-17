@@ -83,19 +83,19 @@ end
 -- put this local function in your love.update to use, passing in dt
 function camera.firstPersonMovement(dt)
     -- collect inputs
-    local mx,my = 0,0
+    local moveX,moveY = 0,0
     local cameraMoved = false
     if love.keyboard.isDown("w") then
-        my = my - 1
+        moveY = moveY - 1
     end
     if love.keyboard.isDown("a") then
-        mx = mx - 1
+        moveX = moveX - 1
     end
     if love.keyboard.isDown("s") then
-        my = my + 1
+        moveY = moveY + 1
     end
     if love.keyboard.isDown("d") then
-        mx = mx + 1
+        moveX = moveX + 1
     end
     if love.keyboard.isDown("space") then
         camera.position[2] = camera.position[2] - 0.15*dt*60
@@ -106,27 +106,30 @@ function camera.firstPersonMovement(dt)
         cameraMoved = true
     end
 
-    -- add camera's direction and movement direction
-    -- then move in the resulting direction
-    if mx ~= 0 or my ~= 0 then
-        local angle = math.atan2(my,mx)
-        local speed = 0.15
-        local dx,dz = math.cos(fpsController.direction + angle)*speed*dt*60, math.sin(fpsController.direction + angle + math.pi)*speed*dt*60
+    -- do some trigonometry on the inputs to make movement relative to camera's direction
+    -- also to make the player not move faster in diagonal directions
+    if moveX ~= 0 or moveY ~= 0 then
+        local angle = math.atan2(moveY,moveX)
+        local speed = 9
+        local directionX,directionZ = math.cos(fpsController.direction + angle)*speed*dt, math.sin(fpsController.direction + angle + math.pi)*speed*dt
 
-        camera.position[1] = camera.position[1] + dx
-        camera.position[3] = camera.position[3] + dz
+        camera.position[1] = camera.position[1] + directionX
+        camera.position[3] = camera.position[3] + directionZ
         cameraMoved = true
     end
 
+    -- update the camera's in the shader
+    -- only if the camera moved, for a slight performance benefit
     if cameraMoved then
         camera.lookTowards(camera.position[1],camera.position[2],camera.position[3], fpsController.direction,fpsController.pitch)
     end
 end
 
--- best served with firstPersoncameraMovement()
 -- use this in your love.mousemoved function, passing in the movements
 function camera.firstPersonLook(dx,dy)
+    -- capture the mouse
     love.mouse.setRelativeMode(true)
+
     local sensitivity = 1/300
     fpsController.direction = fpsController.direction + dx*sensitivity
     fpsController.pitch = math.max(math.min(fpsController.pitch - dy*sensitivity, math.pi*0.5), math.pi*-0.5)
