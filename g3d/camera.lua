@@ -79,6 +79,12 @@ function camera.updateProjectionMatrix(shaderGiven)
     (shaderGiven or shader):send("projectionMatrix", matrices.getProjectionMatrix(camera.fov, camera.nearClip, camera.farClip, camera.aspectRatio))
 end
 
+-- recreate the camera's orthographic projection matrix from its current values
+-- and send the matrix to the shader specified, or the default shader
+function camera.updateOrthographicMatrix(size, shaderGiven)
+    (shaderGiven or shader):send("projectionMatrix", matrices.getOrthographicMatrix(camera.fov, size or 5, camera.nearClip, camera.farClip, camera.aspectRatio))
+end
+
 -- simple first person camera movement with WASD
 -- put this local function in your love.update to use, passing in dt
 function camera.firstPersonMovement(dt)
