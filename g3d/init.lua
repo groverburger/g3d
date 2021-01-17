@@ -20,7 +20,7 @@ G3D_PATH = ...
 
 local g3d = {}
 
-g3d.model = require(G3D_PATH .. "/model")
+g3d.newModel = require(G3D_PATH .. "/model")
 g3d.camera = require(G3D_PATH .. "/camera")
 g3d.camera.updateProjectionMatrix()
 

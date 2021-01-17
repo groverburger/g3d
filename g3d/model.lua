@@ -25,7 +25,7 @@ model.__index = model
 -- this returns a new instance of the model class
 -- a model must be given a .obj file or equivalent lua table, and a texture
 -- translation, rotation, and scale are all 3d vectors and are all optional
-function model.new(given, texture, translation, rotation, scale)
+function newModel(given, texture, translation, rotation, scale)
     local self = setmetatable({}, model)
 
     -- if given is a string, use it as a path to a .obj file
@@ -122,4 +122,4 @@ function model:draw()
     love.graphics.setShader()
 end
 
-return model
+return newModel
