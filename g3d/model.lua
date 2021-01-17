@@ -61,7 +61,7 @@ function model:makeNormals(isFlipped)
         local vec1 = {v[1]-vp[1], v[2]-vp[2], v[3]-vp[3]}
         local vec2 = {vn[1]-v[1], vn[2]-v[2], vn[3]-v[3]}
         local normal = vectors.normalizeVector(vectors.crossProduct(vec1,vec2))
-        local flippage = (isFlipped and -1 or 1)
+        local flippage = isFlipped and -1 or 1
 
         vp[6] = normal[1] * flippage
         vp[7] = normal[2] * flippage
