@@ -6,26 +6,26 @@
 -- simple obj loader
 ----------------------------------------------------------------------------------------------------
 
--- give path of file
--- returns a lua table representation
-return function (path)
-    -- stitch two tables together and return the result
-    local function concatTables(t1,t2,t3)
-        local ret = {}
+-- stitch two tables together and return the result
+local function concatTables(t1,t2,t3)
+    local ret = {}
 
-        for i,v in ipairs(t1) do
-            ret[#ret +1] = v
-        end
-        for i,v in ipairs(t2) do
-            ret[#ret +1] = v
-        end
-        for i,v in ipairs(t3) do
-            ret[#ret +1] = v
-        end
-
-        return ret
+    for i,v in ipairs(t1) do
+        ret[#ret +1] = v
+    end
+    for i,v in ipairs(t2) do
+        ret[#ret +1] = v
+    end
+    for i,v in ipairs(t3) do
+        ret[#ret +1] = v
     end
 
+    return ret
+end
+
+-- give path of file
+-- returns a lua table representation
+local function objLoader(path)
     local verts = {}
     local faces = {}
     local uvs = {}
@@ -60,7 +60,10 @@ return function (path)
         -- the arguments a point takes is v,vt,vn
         if words[1] == "f" then
             local store = {}
+
+            -- TODO allow models with untriangulated faces
             assert(#words == 4, "Faces in "..path.." must be triangulated before they can be used in g3d!")
+
             for i=2, #words do
                 local num = ""
                 local word = words[i]
@@ -119,3 +122,5 @@ return function (path)
 
     return compiled
 end
+
+return objLoader
