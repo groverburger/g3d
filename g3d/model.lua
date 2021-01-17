@@ -45,7 +45,7 @@ function model.new(given, texture, translation, rotation, scale)
     self.texture = texture
     self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
     self.mesh:setTexture(self.texture)
-    self:setTransform(translation or {0,0,0}, rotation or {0,0,0}, scale or {1,1,1})
+    self:setTransform(translation, rotation, scale)
 
     return self
 end
@@ -61,17 +61,19 @@ function model:makeNormals(isFlipped)
         local vec1 = {v[1]-vp[1], v[2]-vp[2], v[3]-vp[3]}
         local vec2 = {vn[1]-v[1], vn[2]-v[2], vn[3]-v[3]}
         local normal = vectors.normalizeVector(vectors.crossProduct(vec1,vec2))
-        vp[6] = normal[1] * (isFlipped and -1 or 1)
-        vp[7] = normal[2] * (isFlipped and -1 or 1)
-        vp[8] = normal[3] * (isFlipped and -1 or 1)
+        local flippage = (isFlipped and -1 or 1)
 
-        v[6] = normal[1] * (isFlipped and -1 or 1)
-        v[7] = normal[2] * (isFlipped and -1 or 1)
-        v[8] = normal[3] * (isFlipped and -1 or 1)
+        vp[6] = normal[1] * flippage
+        vp[7] = normal[2] * flippage
+        vp[8] = normal[3] * flippage
 
-        vn[6] = normal[1] * (isFlipped and -1 or 1)
-        vn[7] = normal[2] * (isFlipped and -1 or 1)
-        vn[8] = normal[3] * (isFlipped and -1 or 1)
+        v[6] = normal[1] * flippage
+        v[7] = normal[2] * flippage
+        v[8] = normal[3] * flippage
+
+        vn[6] = normal[1] * flippage
+        vn[7] = normal[2] * flippage
+        vn[8] = normal[3] * flippage
     end
 end
 
@@ -85,19 +87,25 @@ end
 
 -- move given one 3d vector
 function model:setTranslation(tx,ty,tz)
-    self.translation = {tx,ty,tz}
+    self.translation[1] = tx
+    self.translation[2] = ty
+    self.translation[3] = tz
     self:updateMatrix()
 end
 
 -- rotate given one 3d vector
 function model:setRotation(rx,ry,rz)
-    self.rotation = {rx,ry,rz}
+    self.rotation[1] = rx
+    self.rotation[2] = ry
+    self.rotation[3] = rz
     self:updateMatrix()
 end
 
 -- resize model's matrix based on a given 3d vector
 function model:setScale(sx,sy,sz)
-    self.scale = {sx,sy,sz}
+    self.scale[1] = sx
+    self.scale[2] = sy
+    self.scale[3] = sz
     self:updateMatrix()
 end
 
