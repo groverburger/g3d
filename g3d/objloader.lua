@@ -1,32 +1,31 @@
 -- written by groverbuger for g3d
--- august 2020
+-- january 2021
 -- MIT license
 
 ----------------------------------------------------------------------------------------------------
 -- simple obj loader
 ----------------------------------------------------------------------------------------------------
 
--- stitch two tables together and return the result
--- useful for use in the LoadObjFile function
-local function concatTables(t1,t2,t3)
-    local ret = {}
-
-    for i,v in ipairs(t1) do
-        ret[#ret +1] = v
-    end
-    for i,v in ipairs(t2) do
-        ret[#ret +1] = v
-    end
-    for i,v in ipairs(t3) do
-        ret[#ret +1] = v
-    end
-
-    return ret
-end
-
 -- give path of file
 -- returns a lua table representation
-function LoadObjFile(path)
+return function (path)
+    -- stitch two tables together and return the result
+    local function concatTables(t1,t2,t3)
+        local ret = {}
+
+        for i,v in ipairs(t1) do
+            ret[#ret +1] = v
+        end
+        for i,v in ipairs(t2) do
+            ret[#ret +1] = v
+        end
+        for i,v in ipairs(t3) do
+            ret[#ret +1] = v
+        end
+
+        return ret
+    end
+
     local verts = {}
     local faces = {}
     local uvs = {}
