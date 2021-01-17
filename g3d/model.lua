@@ -104,8 +104,8 @@ end
 -- resize model's matrix based on a given 3d vector
 function model:setScale(sx,sy,sz)
     self.scale[1] = sx
-    self.scale[2] = sy
-    self.scale[3] = sz
+    self.scale[2] = sy or sx
+    self.scale[3] = sz or sx
     self:updateMatrix()
 end
 
