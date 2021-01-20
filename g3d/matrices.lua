@@ -114,6 +114,7 @@ end
 -- matrices are just 16 numbers in table, representing a 4x4 matrix
 -- an identity matrix is defined as {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}
 
+-- creates and returns a new identity matrix
 function matrices.getIdentityMatrix()
     return {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}
 end

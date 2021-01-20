@@ -10,6 +10,8 @@ local loadObjFile = require(G3D_PATH .. "/objloader")
 -- define a model class
 ----------------------------------------------------------------------------------------------------
 
+-- define some default properties that every model should inherit
+-- that being the standard vertexFormat and basic 3D shader
 local model = {
     vertexFormat = {
         {"VertexPosition", "float", 3},
