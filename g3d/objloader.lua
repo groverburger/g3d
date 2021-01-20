@@ -1,5 +1,5 @@
 -- written by groverbuger for g3d
--- august 2020
+-- january 2021
 -- MIT license
 
 ----------------------------------------------------------------------------------------------------
@@ -7,7 +7,6 @@
 ----------------------------------------------------------------------------------------------------
 
 -- stitch two tables together and return the result
--- useful for use in the LoadObjFile function
 local function concatTables(t1,t2,t3)
     local ret = {}
 
@@ -26,7 +25,7 @@ end
 
 -- give path of file
 -- returns a lua table representation
-function LoadObjFile(path)
+local function objLoader(path)
     local verts = {}
     local faces = {}
     local uvs = {}
@@ -61,7 +60,10 @@ function LoadObjFile(path)
         -- the arguments a point takes is v,vt,vn
         if words[1] == "f" then
             local store = {}
+
+            -- TODO allow models with untriangulated faces
             assert(#words == 4, "Faces in "..path.." must be triangulated before they can be used in g3d!")
+
             for i=2, #words do
                 local num = ""
                 local word = words[i]
@@ -120,3 +122,5 @@ function LoadObjFile(path)
 
     return compiled
 end
+
+return objLoader
