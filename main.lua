@@ -5,8 +5,8 @@
 require "g3d"
 
 function love.load()
-    Earth = Model:new("assets/sphere.obj", "assets/earth.png", {0,0,4}, nil, {-1,1,1})
-    Moon = Model:new("assets/sphere.obj", "assets/moon.png", {5,0,4}, nil, {-0.5,0.5,0.5})
+    Earth = Model:new("assets/sphere.obj", "assets/earth.png", {0,0,4})
+    Moon = Model:new("assets/sphere.obj", "assets/moon.png", {5,0,4}, nil, {0.5,0.5,0.5})
     Background = Model:new("assets/sphere.obj", "assets/starfield.png", {0,0,0}, nil, {500,500,500})
     Timer = 0
 end
