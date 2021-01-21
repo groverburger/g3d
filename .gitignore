@@ -1,4 +1,5 @@
 
 .DS_Store
-assets/Thumbs.db
+*/Thumbs.db
 docs/*
+Thumbs.db
