@@ -17,7 +17,7 @@ View the original forum post [here](https://love2d.org/forums/viewtopic.php?f=5&
 
 1. Download the latest release version.
 2. Add the `g3d` subfolder folder to your project.
-3. Add `require "g3d"` to the top of your `main.lua` file.
+3. Add `g3d = require "g3d"` to the top of your `main.lua` file.
 
 For more information, check out the [g3d wiki](https://github.com/groverburger/g3d/wiki)!
 
