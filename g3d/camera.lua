@@ -15,7 +15,7 @@ local camera = {
     farClip = 1000,
     aspectRatio = love.graphics.getWidth()/love.graphics.getHeight(),
     position = {0,0,0},
-    target = {0,0,0},
+    target = {0,0,1},
     down = {0,-1,0},
 }
 

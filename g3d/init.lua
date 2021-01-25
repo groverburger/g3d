@@ -23,6 +23,7 @@ local g3d = {}
 g3d.newModel = require(G3D_PATH .. "/model")
 g3d.camera = require(G3D_PATH .. "/camera")
 g3d.camera.updateProjectionMatrix()
+g3d.camera.updateViewMatrix()
 
 -- so that far polygons don't overlap near polygons
 love.graphics.setDepthMode("lequal", true)
