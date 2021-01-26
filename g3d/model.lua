@@ -55,7 +55,7 @@ local function newModel(given, texture, translation, rotation, scale)
     self.texture = texture
     self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
     self.mesh:setTexture(self.texture)
-    self:setTransform(translation, rotation, scale)
+    self:setTransform(translation or {0,0,0}, rotation or {0,0,0}, scale or {1,1,1})
     self:generateAABB()
 
     return self
@@ -90,9 +90,9 @@ end
 
 -- move and rotate given two 3d vectors
 function model:setTransform(translation, rotation, scale)
-    self.translation = translation or {0,0,0}
-    self.rotation = rotation or {0,0,0}
-    self.scale = scale or {1,1,1}
+    self.translation = translation or self.translation
+    self.rotation = rotation or self.rotation
+    self.scale = scale or self.scale
     self:updateMatrix()
 end
 
