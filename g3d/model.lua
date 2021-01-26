@@ -30,6 +30,7 @@ model.generateAABB = collisions.generateAABB
 model.isIntersectionAABB = collisions.isIntersectionAABB
 model.isPointInsideAABB = collisions.isPointInsideAABB
 model.isRayCollision = collisions.isRayCollision
+model.pointDistance = collisions.pointDistance
 
 -- this returns a new instance of the model class
 -- a model must be given a .obj file or equivalent lua table, and a texture

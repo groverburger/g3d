@@ -82,6 +82,11 @@ function collisions:isPointInsideAABB(x,y,z)
     return in_x and in_y and in_z
 end
 
+-- returns the distance from the point given to the origin of the model
+function collisions:pointDistance(x,y,z)
+    return math.sqrt((x - self.translation[1])^2 + (y - self.translation[2])^2 + (z - self.translation[3])^2)
+end
+
 -- define some basic vector functions that don't use tables
 -- for efficiency purposes, as collision functions must be fast
 local function fastSubtractVector(v1,v2,v3, v4,v5,v6)
