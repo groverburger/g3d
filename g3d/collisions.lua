@@ -102,8 +102,7 @@ end
 -- the x,y,z coordinates of the collision point,
 -- and the x,y,z of the surface normal of the triangle that was hit
 --
--- NOTE: does not take model's matrix into account!
--- therefore translation, rotation, and scale do not apply to this function
+-- NOTE: ignores rotation!
 --
 -- sources:
 --     https://github.com/excessive/cpml/blob/master/modules/intersect.lua
@@ -119,6 +118,9 @@ function collisions:isRayCollision(src_1, src_2, src_3, dir_1, dir_2, dir_3)
     local translation_x = self.translation[1]
     local translation_y = self.translation[2]
     local translation_z = self.translation[3]
+    local scale_x = self.scale[1]
+    local scale_y = self.scale[2]
+    local scale_z = self.scale[3]
     local verts = self.verts
 
     for v=1, #verts, 3 do
@@ -126,15 +128,15 @@ function collisions:isRayCollision(src_1, src_2, src_3, dir_1, dir_2, dir_3)
         -- if this is a backface, don't check it for collision
         if fastDotProduct(verts[v][6],verts[v][7],verts[v][8], dir_1,dir_2,dir_3) < 0 then
             -- cache these variables for efficiency
-            local tri_1_1 = verts[v][1] + translation_x
-            local tri_1_2 = verts[v][2] + translation_y
-            local tri_1_3 = verts[v][3] + translation_z
-            local tri_2_1 = verts[v+1][1] + translation_x
-            local tri_2_2 = verts[v+1][2] + translation_y
-            local tri_2_3 = verts[v+1][3] + translation_z
-            local tri_3_1 = verts[v+2][1] + translation_x
-            local tri_3_2 = verts[v+2][2] + translation_y
-            local tri_3_3 = verts[v+2][3] + translation_z
+            local tri_1_1 = verts[v][1]*scale_x + translation_x
+            local tri_1_2 = verts[v][2]*scale_y + translation_y
+            local tri_1_3 = verts[v][3]*scale_z + translation_z
+            local tri_2_1 = verts[v+1][1]*scale_x + translation_x
+            local tri_2_2 = verts[v+1][2]*scale_y + translation_y
+            local tri_2_3 = verts[v+1][3]*scale_z + translation_z
+            local tri_3_1 = verts[v+2][1]*scale_x + translation_x
+            local tri_3_2 = verts[v+2][2]*scale_y + translation_y
+            local tri_3_3 = verts[v+2][3]*scale_z + translation_z
             local e11,e12,e13 = fastSubtractVector(tri_2_1,tri_2_2,tri_2_3, tri_1_1,tri_1_2,tri_1_3)
             local e21,e22,e23 = fastSubtractVector(tri_3_1,tri_3_2,tri_3_3, tri_1_1,tri_1_2,tri_1_3)
             local h1,h2,h3 = fastCrossProduct(dir_1,dir_2,dir_3, e21,e22,e23)
