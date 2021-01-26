@@ -5,24 +5,31 @@
 local vectors = require(G3D_PATH .. "/vectors")
 local matrices = require(G3D_PATH .. "/matrices")
 local loadObjFile = require(G3D_PATH .. "/objloader")
+local collisions = require(G3D_PATH .. "/collisions")
 
 ----------------------------------------------------------------------------------------------------
 -- define a model class
 ----------------------------------------------------------------------------------------------------
 
+local model = {}
+model.__index = model
+
 -- define some default properties that every model should inherit
 -- that being the standard vertexFormat and basic 3D shader
-local model = {
-    vertexFormat = {
-        {"VertexPosition", "float", 3},
-        {"VertexTexCoord", "float", 2},
-        {"VertexNormal", "float", 3},
-        {"VertexColor", "byte", 4},
-    },
-
-    shader = require(G3D_PATH .. "/shader"),
+model.vertexFormat = {
+    {"VertexPosition", "float", 3},
+    {"VertexTexCoord", "float", 2},
+    {"VertexNormal", "float", 3},
+    {"VertexColor", "byte", 4},
 }
-model.__index = model
+model.shader = require(G3D_PATH .. "/shader")
+
+-- give the model some collision functions
+-- so it can act like a collider
+model.generateAABB = collisions.generateAABB
+model.isIntersectionAABB = collisions.isIntersectionAABB
+model.isPointInsideAABB = collisions.isPointInsideAABB
+model.isRayCollision = collisions.isRayCollision
 
 -- this returns a new instance of the model class
 -- a model must be given a .obj file or equivalent lua table, and a texture
@@ -35,6 +42,7 @@ local function newModel(given, texture, translation, rotation, scale)
     if type(given) == "string" then
         given = loadObjFile(given)
     end
+    assert(given and type(given) == "table", "Corrupt vertices given to newModel")
 
     -- if texture is a string, use it as a path to an image file
     -- otherwise texture is already an image, so don't bother
@@ -48,6 +56,7 @@ local function newModel(given, texture, translation, rotation, scale)
     self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
     self.mesh:setTexture(self.texture)
     self:setTransform(translation, rotation, scale)
+    self:generateAABB()
 
     return self
 end
