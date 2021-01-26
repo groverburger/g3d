@@ -24,13 +24,10 @@ model.vertexFormat = {
 }
 model.shader = require(G3D_PATH .. "/shader")
 
--- give the model some collision functions
--- so it can act like a collider
-model.generateAABB = collisions.generateAABB
-model.isIntersectionAABB = collisions.isIntersectionAABB
-model.isPointInsideAABB = collisions.isPointInsideAABB
-model.isRayCollision = collisions.isRayCollision
-model.pointDistance = collisions.pointDistance
+-- model class imports functions from the collisions library
+for key,value in pairs(collisions) do
+    model[key] = value
+end
 
 -- this returns a new instance of the model class
 -- a model must be given a .obj file or equivalent lua table, and a texture

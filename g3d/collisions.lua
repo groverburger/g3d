@@ -8,6 +8,22 @@
 
 local collisions = {}
 
+-- define some basic vector functions that don't use tables
+-- for efficiency purposes, as collision functions must be fast
+local function fastSubtractVector(v1,v2,v3, v4,v5,v6)
+    return v1-v4, v2-v5, v3-v6
+end
+local function fastCrossProduct(a1,a2,a3, b1,b2,b3)
+    return a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - a2*b1
+end
+local function fastDotProduct(a1,a2,a3, b1,b2,b3)
+    return a1*b1 + a2*b2 + a3*b3
+end
+local function fastNormalizeVector(x,y,z)
+    local mag = math.sqrt(x^2, y^2, z^2)
+    return x/mag, y/mag, z/mag
+end
+
 -- generate an axis-aligned bounding box
 -- very useful for less precise collisions, like hitboxes
 --
@@ -42,11 +58,8 @@ end
 
 -- check if two models have intersecting AABBs
 -- other argument is another model
+-- https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_collision_detection
 function collisions:isIntersectionAABB(other)
-    -- make sure AABBs exist if they don't already
-    if not self.aabb then self:generateAABB() end
-    if not other.aabb then other:generateAABB() end
-
     -- cache these references
     local a_min = self.aabb.min
     local a_max = self.aabb.max
@@ -70,8 +83,6 @@ end
 
 -- check if a given point is inside the model's AABB
 function collisions:isPointInsideAABB(x,y,z)
-    if not self.aabb then self:generateAABB() end
-
     local min = self.aabb.min
     local max = self.aabb.max
 
@@ -83,23 +94,49 @@ function collisions:isPointInsideAABB(x,y,z)
 end
 
 -- returns the distance from the point given to the origin of the model
-function collisions:pointDistance(x,y,z)
+function collisions:getDistanceFrom(x,y,z)
     return math.sqrt((x - self.translation[1])^2 + (y - self.translation[2])^2 + (z - self.translation[3])^2)
 end
 
--- define some basic vector functions that don't use tables
--- for efficiency purposes, as collision functions must be fast
-local function fastSubtractVector(v1,v2,v3, v4,v5,v6)
-    return v1-v4, v2-v5, v3-v6
-end
-local function fastCrossProduct(a1,a2,a3, b1,b2,b3)
-    return a2*b3 - a3*b2, a3*b1 - a1*b3, a1*b2 - a2*b1
-end
-local function fastDotProduct(a1,a2,a3, b1,b2,b3)
-    return a1*b1 + a2*b2 + a3*b3
+-- AABB - ray intersection
+-- based off of ray - AABB intersection from excessive's CPML library
+--
+-- sources:
+--     https://github.com/excessive/cpml/blob/master/modules/intersect.lua
+--     http://gamedev.stackexchange.com/a/18459
+function collisions:rayIntersectionAABB(src_1, src_2, src_3, dir_1, dir_2, dir_3)
+    local dir_1, dir_2, dir_3 = fastNormalizeVector(dir_1, dir_2, dir_3)
+
+	local t1 = (self.aabb.min[1]*self.scale[1] + self.translation[1] - src_1) / dir_1
+	local t2 = (self.aabb.max[1]*self.scale[1] + self.translation[1] - src_1) / dir_1
+	local t3 = (self.aabb.min[2]*self.scale[2] + self.translation[2] - src_2) / dir_2
+	local t4 = (self.aabb.max[2]*self.scale[2] + self.translation[2] - src_2) / dir_2
+	local t5 = (self.aabb.min[3]*self.scale[3] + self.translation[3] - src_3) / dir_3
+	local t6 = (self.aabb.max[3]*self.scale[3] + self.translation[3] - src_3) / dir_3
+
+    local min = math.min
+    local max = math.max
+	local tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6))
+	local tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6))
+
+	-- ray is intersecting AABB, but whole AABB is behind us
+	if tmax < 0 then
+		return false
+	end
+
+	-- ray does not intersect AABB
+	if tmin > tmax then
+		return false
+	end
+
+    -- return distance and the collision coordinates
+    local where_1 = src_1 + dir_1 * tmin
+    local where_2 = src_2 + dir_2 * tmin
+    local where_3 = src_3 + dir_3 * tmin
+	return tmin, where_1, where_2, where_3
 end
 
--- model - ray collision
+-- model - ray intersection
 -- based off of triangle - ray collision from excessive's CPML library
 -- does a triangle - ray collision for every face in the model to find the shortest collision
 --
@@ -114,7 +151,7 @@ end
 --     http://www.lighthouse3d.com/tutorials/maths/ray-triangle-intersection/
 local abs = math.abs
 local tiny = 2.2204460492503131e-16 -- the smallest possible value for a double, "double epsilon"
-function collisions:isRayCollision(src_1, src_2, src_3, dir_1, dir_2, dir_3)
+function collisions:rayIntersection(src_1, src_2, src_3, dir_1, dir_2, dir_3)
     -- declare the variables that will be returned by the function
     local finalLength, where_x, where_y, where_z
     local norm_x, norm_y, norm_z
