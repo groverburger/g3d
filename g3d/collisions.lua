@@ -15,8 +15,8 @@ local fastMagnitude = vectors.magnitude
 -- collision detection functions
 ----------------------------------------------------------------------------------------------------
 --
--- none of these functions are required for developing 3D games
--- however these collision functions are very frequently used in 3D games
+-- none of these functions are required for 3D
+-- however, collision functions are very frequently used in 3D games
 
 local collisions = {}
 
@@ -122,7 +122,7 @@ local function triangleSphere(
     and fastDotProduct(c1_x, c1_y, c1_z, n_x, n_y, n_z) <= 0
     and fastDotProduct(c2_x, c2_y, c2_z, n_x, n_y, n_z) <= 0 then
         n_x, n_y, n_z = src_x - itx_x, src_y - itx_y, src_z - itx_z
-        
+
         -- the sphere is inside the triangle, so the normal is zero
         -- instead, just return the triangle's normal
         if n_x == 0 and n_y == 0 and n_z == 0 then
@@ -483,7 +483,7 @@ function collisions:createCollisionZones(zoneSize)
                         table.insert(zones[hash], verts[v+2])
                     end
                 end
-                
+
                 if zones[hash] then
                     print(hash, #zones[hash])
                 end
@@ -583,33 +583,33 @@ end
 function collisions:rayIntersectionAABB(src_1, src_2, src_3, dir_1, dir_2, dir_3)
     local dir_1, dir_2, dir_3 = fastNormalize(dir_1, dir_2, dir_3)
 
-	local t1 = (self.aabb.min[1]*self.scale[1] + self.translation[1] - src_1) / dir_1
-	local t2 = (self.aabb.max[1]*self.scale[1] + self.translation[1] - src_1) / dir_1
-	local t3 = (self.aabb.min[2]*self.scale[2] + self.translation[2] - src_2) / dir_2
-	local t4 = (self.aabb.max[2]*self.scale[2] + self.translation[2] - src_2) / dir_2
-	local t5 = (self.aabb.min[3]*self.scale[3] + self.translation[3] - src_3) / dir_3
-	local t6 = (self.aabb.max[3]*self.scale[3] + self.translation[3] - src_3) / dir_3
+    local t1 = (self.aabb.min[1]*self.scale[1] + self.translation[1] - src_1) / dir_1
+    local t2 = (self.aabb.max[1]*self.scale[1] + self.translation[1] - src_1) / dir_1
+    local t3 = (self.aabb.min[2]*self.scale[2] + self.translation[2] - src_2) / dir_2
+    local t4 = (self.aabb.max[2]*self.scale[2] + self.translation[2] - src_2) / dir_2
+    local t5 = (self.aabb.min[3]*self.scale[3] + self.translation[3] - src_3) / dir_3
+    local t6 = (self.aabb.max[3]*self.scale[3] + self.translation[3] - src_3) / dir_3
 
     local min = math.min
     local max = math.max
-	local tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6))
-	local tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6))
+    local tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6))
+    local tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6))
 
-	-- ray is intersecting AABB, but whole AABB is behind us
-	if tmax < 0 then
-		return false
-	end
+    -- ray is intersecting AABB, but whole AABB is behind us
+    if tmax < 0 then
+        return false
+    end
 
-	-- ray does not intersect AABB
-	if tmin > tmax then
-		return false
-	end
+    -- ray does not intersect AABB
+    if tmin > tmax then
+        return false
+    end
 
     -- return distance and the collision coordinates
     local where_1 = src_1 + dir_1 * tmin
     local where_2 = src_2 + dir_2 * tmin
     local where_3 = src_3 + dir_3 * tmin
-	return tmin, where_1, where_2, where_3
+    return tmin, where_1, where_2, where_3
 end
 
 return collisions
