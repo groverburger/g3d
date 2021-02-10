@@ -3,7 +3,7 @@
 -- MIT license
 
 local shader = require(G3D_PATH .. "/shader")
-local matrices = require(G3D_PATH .. "/matrices")
+local newMatrix = require(G3D_PATH .. "/matrices")
 
 ----------------------------------------------------------------------------------------------------
 -- define the camera singleton
@@ -17,6 +17,9 @@ local camera = {
     position = {0,0,0},
     target = {0,0,1},
     down = {0,-1,0},
+
+    viewMatrix = newMatrix(),
+    projectionMatrix = newMatrix(),
 }
 
 -- private variables used only for the first person camera functions
@@ -24,6 +27,25 @@ local fpsController = {
     direction = 0,
     pitch = 0
 }
+
+-- read-only variables, can't be set by the end user
+function camera.getDirectionPitch()
+    return fpsController.direction, fpsController.pitch
+end
+
+-- convenient function to return the camera's normalized look vector
+function camera:getLookVector()
+    local vx = camera.target[1] - camera.position[1]
+    local vy = camera.target[2] - camera.position[2]
+    local vz = camera.target[3] - camera.position[3]
+    local length = math.sqrt(vx^2 + vy^2 + vz^2)
+
+    -- make sure not to divide by 0
+    if length > 0 then
+        return vx/length, vy/length, vz/length
+    end
+    return vx,vy,vz
+end
 
 -- give the camera a point to look from and a point to look towards
 function camera.lookAt(x,y,z, xAt,yAt,zAt)
@@ -34,7 +56,10 @@ function camera.lookAt(x,y,z, xAt,yAt,zAt)
     camera.target[2] = yAt
     camera.target[3] = zAt
 
-    -- TODO: update fpsController's direction and pitch here
+    -- update the fpsController's direction and pitch based on lookAt
+    local dx,dy,dz = camera:getLookVector()
+    fpsController.direction = math.pi/2 - math.atan2(dz, dx)
+    fpsController.pitch = -math.atan2(dy, math.sqrt(dx^2 + dz^2))
 
     -- update the camera in the shader
     camera.updateViewMatrix()
@@ -42,23 +67,22 @@ end
 
 -- move and rotate the camera, given a point and a direction and a pitch (vertical direction)
 function camera.lookInDirection(x,y,z, directionTowards,pitchTowards)
-    camera.position[1] = x
-    camera.position[2] = y
-    camera.position[3] = z
+    camera.position[1] = x or camera.position[1]
+    camera.position[2] = y or camera.position[2]
+    camera.position[3] = z or camera.position[3]
 
     fpsController.direction = directionTowards or fpsController.direction
     fpsController.pitch = pitchTowards or fpsController.pitch
 
     -- convert the direction and pitch into a target point
+
+    -- turn the cos of the pitch into a sign value, either 1, -1, or 0
     local sign = math.cos(fpsController.pitch)
-    if sign > 0 then
-        sign = 1
-    elseif sign < 0 then
-        sign = -1
-    else
-        sign = 0
-    end
-    local cosPitch = sign*math.max(math.abs(math.cos(fpsController.pitch)), 0.001)
+    sign = (sign > 0 and 1) or (sign < 0 and -1) or 0
+
+    -- don't let cosPitch ever hit 0, because weird camera glitches will happen
+    local cosPitch = sign*math.max(math.abs(math.cos(fpsController.pitch)), 0.00001)
+
     camera.target[1] = camera.position[1]+math.sin(fpsController.direction)*cosPitch
     camera.target[2] = camera.position[2]-math.sin(fpsController.pitch)
     camera.target[3] = camera.position[3]+math.cos(fpsController.direction)*cosPitch
@@ -70,19 +94,22 @@ end
 -- recreate the camera's view matrix from its current values
 -- and send the matrix to the shader specified, or the default shader
 function camera.updateViewMatrix(shaderGiven)
-    (shaderGiven or shader):send("viewMatrix", matrices.getViewMatrix(camera.position, camera.target, camera.down))
+    camera.viewMatrix:setViewMatrix(camera.position, camera.target, camera.down);
+    (shaderGiven or shader):send("viewMatrix", camera.viewMatrix)
 end
 
 -- recreate the camera's projection matrix from its current values
 -- and send the matrix to the shader specified, or the default shader
 function camera.updateProjectionMatrix(shaderGiven)
-    (shaderGiven or shader):send("projectionMatrix", matrices.getProjectionMatrix(camera.fov, camera.nearClip, camera.farClip, camera.aspectRatio))
+    camera.projectionMatrix:setProjectionMatrix(camera.fov, camera.nearClip, camera.farClip, camera.aspectRatio);
+    (shaderGiven or shader):send("projectionMatrix", camera.projectionMatrix)
 end
 
 -- recreate the camera's orthographic projection matrix from its current values
 -- and send the matrix to the shader specified, or the default shader
 function camera.updateOrthographicMatrix(size, shaderGiven)
-    (shaderGiven or shader):send("projectionMatrix", matrices.getOrthographicMatrix(camera.fov, size or 5, camera.nearClip, camera.farClip, camera.aspectRatio))
+    camera.projectionMatrix:setOrthographicMatrix(camera.fov, size or 5, camera.nearClip, camera.farClip, camera.aspectRatio);
+    (shaderGiven or shader):send("projectionMatrix", camera.projectionMatrix)
 end
 
 -- simple first person camera movement with WASD
@@ -91,24 +118,17 @@ function camera.firstPersonMovement(dt)
     -- collect inputs
     local moveX,moveY = 0,0
     local cameraMoved = false
-    if love.keyboard.isDown("w") then
-        moveY = moveY - 1
-    end
-    if love.keyboard.isDown("a") then
-        moveX = moveX - 1
-    end
-    if love.keyboard.isDown("s") then
-        moveY = moveY + 1
-    end
-    if love.keyboard.isDown("d") then
-        moveX = moveX + 1
-    end
+    local speed = 9
+    if love.keyboard.isDown("w") then moveY = moveY - 1 end
+    if love.keyboard.isDown("a") then moveX = moveX - 1 end
+    if love.keyboard.isDown("s") then moveY = moveY + 1 end
+    if love.keyboard.isDown("d") then moveX = moveX + 1 end
     if love.keyboard.isDown("space") then
-        camera.position[2] = camera.position[2] - 0.15*dt*60
+        camera.position[2] = camera.position[2] - speed*dt
         cameraMoved = true
     end
     if love.keyboard.isDown("lshift") then
-        camera.position[2] = camera.position[2] + 0.15*dt*60
+        camera.position[2] = camera.position[2] + speed*dt
         cameraMoved = true
     end
 
@@ -116,7 +136,6 @@ function camera.firstPersonMovement(dt)
     -- also to make the player not move faster in diagonal directions
     if moveX ~= 0 or moveY ~= 0 then
         local angle = math.atan2(moveY,moveX)
-        local speed = 9
         local directionX,directionZ = math.cos(fpsController.direction + angle)*speed*dt, math.sin(fpsController.direction + angle + math.pi)*speed*dt
 
         camera.position[1] = camera.position[1] + directionX
@@ -127,7 +146,7 @@ function camera.firstPersonMovement(dt)
     -- update the camera's in the shader
     -- only if the camera moved, for a slight performance benefit
     if cameraMoved then
-        camera.lookInDirection(camera.position[1],camera.position[2],camera.position[3], fpsController.direction,fpsController.pitch)
+        camera.lookInDirection()
     end
 end
 

@@ -1,8 +1,74 @@
 -- written by groverbuger for g3d
--- january 2021
+-- february 2021
 -- MIT license
 
 local vectors = require(G3D_PATH .. "/vectors")
+local fastCrossProduct = vectors.crossProduct
+local fastDotProduct = vectors.dotProduct
+local fastNormalize = vectors.normalize
+
+----------------------------------------------------------------------------------------------------
+-- matrix class
+----------------------------------------------------------------------------------------------------
+-- matrices are 16 numbers in table, representing a 4x4 matrix
+
+local matrix = {}
+matrix.__index = matrix
+
+local function newMatrix()
+    local self = setmetatable({}, matrix)
+    self:identity()
+    return self
+end
+
+function matrix:identity()
+    self[1],  self[2],  self[3],  self[4]  = 1, 0, 0, 0
+    self[5],  self[6],  self[7],  self[8]  = 0, 1, 0, 0
+    self[9],  self[10], self[11], self[12] = 0, 0, 1, 0
+    self[13], self[14], self[15], self[16] = 0, 0, 0, 1
+end
+
+function matrix:getValueAt(x,y)
+    return self[x + (y-1)*4]
+end
+
+-- multiply this matrix and another matrix together
+-- this matrix becomes the result of the multiplication operation
+local orig = newMatrix()
+function matrix:multiply(other)
+    -- hold the values of the original matrix
+    -- because the matrix is changing while it is used
+    for i=1, 16 do
+        orig[i] = self[i]
+    end
+
+    local i = 1
+    for y=1, 4 do
+        for x=1, 4 do
+            self[i] = orig:getValueAt(1,y)*other:getValueAt(x,1)
+            self[i] = self[i] + orig:getValueAt(2,y)*other:getValueAt(x,2)
+            self[i] = self[i] + orig:getValueAt(3,y)*other:getValueAt(x,3)
+            self[i] = self[i] + orig:getValueAt(4,y)*other:getValueAt(x,4)
+            i = i + 1
+        end
+    end
+end
+
+function matrix:__tostring()
+    local str = ""
+
+    for i=1, 16 do
+        str = str .. self[i]
+
+        if i%4 == 0 and i > 1 then
+            str = str .. "\n"
+        else
+            str = str .. ", "
+        end
+    end
+
+    return str
+end
 
 ----------------------------------------------------------------------------------------------------
 -- transformation, projection, and rotation matrices
@@ -10,137 +76,108 @@ local vectors = require(G3D_PATH .. "/vectors")
 -- the three most important matrices for 3d graphics
 -- these three matrices are all you need to write a simple 3d shader
 
-local matrices = {}
-
 -- returns a transformation matrix
 -- translation and rotation are 3d vectors
-function matrices.getTransformationMatrix(translation, rotation, scale)
-    local ret = matrices.getIdentityMatrix()
+local temp = newMatrix()
+function matrix:setTransformationMatrix(translation, rotation, scale)
+    self:identity()
 
     -- translations
-    ret[4] = translation[1]
-    ret[8] = translation[2]
-    ret[12] = translation[3]
+    self[4] = translation[1]
+    self[8] = translation[2]
+    self[12] = translation[3]
 
     -- rotations
-    -- x
-    local rx = matrices.getIdentityMatrix()
-    rx[6] = math.cos(rotation[1])
-    rx[7] = -1*math.sin(rotation[1])
-    rx[10] = math.sin(rotation[1])
-    rx[11] = math.cos(rotation[1])
-    ret = matrices.multiply(ret, rx)
+    if #rotation == 3 then
+        -- use 3D rotation vector as euler angles
+        -- x
+        temp:identity()
+        temp[6] = math.cos(rotation[1])
+        temp[7] = -1*math.sin(rotation[1])
+        temp[10] = math.sin(rotation[1])
+        temp[11] = math.cos(rotation[1])
+        self:multiply(temp)
 
-    -- y
-    local ry = matrices.getIdentityMatrix()
-    ry[1] = math.cos(rotation[2])
-    ry[3] = math.sin(rotation[2])
-    ry[9] = -1*math.sin(rotation[2])
-    ry[11] = math.cos(rotation[2])
-    ret = matrices.multiply(ret, ry)
+        -- y
+        temp:identity()
+        temp[1] = math.cos(rotation[2])
+        temp[3] = math.sin(rotation[2])
+        temp[9] = -1*math.sin(rotation[2])
+        temp[11] = math.cos(rotation[2])
+        self:multiply(temp)
 
-    -- z
-    local rz = matrices.getIdentityMatrix()
-    rz[1] = math.cos(rotation[3])
-    rz[2] = -1*math.sin(rotation[3])
-    rz[5] = math.sin(rotation[3])
-    rz[6] = math.cos(rotation[3])
-    ret = matrices.multiply(ret, rz)
+        -- z
+        temp:identity()
+        temp[1] = math.cos(rotation[3])
+        temp[2] = -1*math.sin(rotation[3])
+        temp[5] = math.sin(rotation[3])
+        temp[6] = math.cos(rotation[3])
+        self:multiply(temp)
+    else
+        -- use 4D rotation vector as quaternion
+        temp:identity()
+
+        local qx,qy,qz,qw = rotation[1], rotation[2], rotation[3], rotation[4]
+        temp[1], temp[2],  temp[3]  = 1 - 2*qy^2 - 2*qz^2, 2*qx*qy - 2*qz*qw,   2*qx*qz + 2*qy*qw
+        temp[5], temp[6],  temp[7]  = 2*qx*qy + 2*qz*qw,   1 - 2*qx^2 - 2*qz^2, 2*qy*qz - 2*qx*qw
+        temp[9], temp[10], temp[11] = 2*qx*qz - 2*qy*qw,   2*qy*qz + 2*qx*qw,   1 - 2*qx^2 - 2*qy^2
+
+        self:multiply(temp)
+    end
 
     -- scale
-    local sm = matrices.getIdentityMatrix()
-    sm[1] = scale[1]
-    sm[6] = scale[2]
-    sm[11] = scale[3]
-    ret = matrices.multiply(ret, sm)
+    temp:identity()
+    temp[1] = scale[1]
+    temp[6] = scale[2]
+    temp[11] = scale[3]
+    self:multiply(temp)
 
-    return ret
+    return self
 end
 
--- returns a standard projection matrix
+-- returns a perspective projection matrix
 -- (things farther away appear smaller)
 -- all arguments are scalars aka normal numbers
 -- aspectRatio is defined as window width divided by window height
-function matrices.getProjectionMatrix(fov, near, far, aspectRatio)
+function matrix:setProjectionMatrix(fov, near, far, aspectRatio)
     local top = near * math.tan(fov/2)
     local bottom = -1*top
     local right = top * aspectRatio
     local left = -1*right
 
-    return {
-        2*near/(right-left), 0, (right+left)/(right-left), 0,
-        0, 2*near/(top-bottom), (top+bottom)/(top-bottom), 0,
-        0, 0, -1*(far+near)/(far-near), -2*far*near/(far-near),
-        0, 0, -1, 0
-    }
+    self[1],  self[2],  self[3],  self[4]  = 2*near/(right-left), 0, (right+left)/(right-left), 0
+    self[5],  self[6],  self[7],  self[8]  = 0, 2*near/(top-bottom), (top+bottom)/(top-bottom), 0
+    self[9],  self[10], self[11], self[12] = 0, 0, -1*(far+near)/(far-near), -2*far*near/(far-near)
+    self[13], self[14], self[15], self[16] = 0, 0, -1, 0
 end
 
 -- returns an orthographic projection matrix
 -- (things farther away are the same size as things closer)
 -- all arguments are scalars aka normal numbers
 -- aspectRatio is defined as window width divided by window height
-function matrices.getOrthographicMatrix(fov, size, near, far, aspectRatio)
+function matrix:setOrthographicMatrix(fov, size, near, far, aspectRatio)
     local top = size * math.tan(fov/2)
     local bottom = -1*top
     local right = top * aspectRatio
     local left = -1*right
 
-    return {
-        2/(right-left), 0, 0, -1*(right+left)/(right-left),
-        0, 2/(top-bottom), 0, -1*(top+bottom)/(top-bottom),
-        0, 0, -2/(far-near), -(far+near)/(far-near),
-        0, 0, 0, 1
-    }
+    self[1],  self[2],  self[3],  self[4]  = 2/(right-left), 0, 0, -1*(right+left)/(right-left)
+    self[5],  self[6],  self[7],  self[8]  = 0, 2/(top-bottom), 0, -1*(top+bottom)/(top-bottom)
+    self[9],  self[10], self[11], self[12] = 0, 0, -2/(far-near), -(far+near)/(far-near)
+    self[13], self[14], self[15], self[16] = 0, 0, 0, 1
 end
 
 -- returns a view matrix
 -- eye, target, and down are all 3d vectors
-function matrices.getViewMatrix(eye, target, down)
-    local z = vectors.normalizeVector({eye[1] - target[1], eye[2] - target[2], eye[3] - target[3]})
-    local x = vectors.normalizeVector(vectors.crossProduct(down, z))
-    local y = vectors.crossProduct(z, x)
+function matrix:setViewMatrix(eye, target, down)
+    local z_1, z_2, z_3 = fastNormalize(eye[1] - target[1], eye[2] - target[2], eye[3] - target[3])
+    local x_1, x_2, x_3 = fastNormalize(fastCrossProduct(down[1], down[2], down[3], z_1, z_2, z_3))
+    local y_1, y_2, y_3 = fastCrossProduct(z_1, z_2, z_3, x_1, x_2, x_3)
 
-    return {
-        x[1], x[2], x[3], -1*vectors.dotProduct(x, eye),
-        y[1], y[2], y[3], -1*vectors.dotProduct(y, eye),
-        z[1], z[2], z[3], -1*vectors.dotProduct(z, eye),
-        0, 0, 0, 1,
-    }
+    self[1],  self[2],  self[3],  self[4]  = x_1, x_2, x_3, -1*fastDotProduct(x_1, x_2, x_3, eye[1], eye[2], eye[3])
+    self[5],  self[6],  self[7],  self[8]  = y_1, y_2, y_3, -1*fastDotProduct(y_1, y_2, y_3, eye[1], eye[2], eye[3])
+    self[9],  self[10], self[11], self[12] = z_1, z_2, z_3, -1*fastDotProduct(z_1, z_2, z_3, eye[1], eye[2], eye[3])
+    self[13], self[14], self[15], self[16] = 0, 0, 0, 1
 end
 
-----------------------------------------------------------------------------------------------------
--- basic matrix functions
-----------------------------------------------------------------------------------------------------
--- matrices are just 16 numbers in table, representing a 4x4 matrix
--- an identity matrix is defined as {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}
-
--- creates and returns a new identity matrix
-function matrices.getIdentityMatrix()
-    return {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1}
-end
-
--- i find rows and columns confusing, so i use coordinate pairs instead
--- this returns a value of a matrix at a specific coordinate
-function matrices.getMatrixValueAt(matrix, x,y)
-    return matrix[x + (y-1)*4]
-end
-
--- return the matrix that results from the two given matrices multiplied together
-function matrices.multiply(a,b)
-    local ret = {0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0}
-
-    local i = 1
-    for y=1, 4 do
-        for x=1, 4 do
-            ret[i] = ret[i] + matrices.getMatrixValueAt(a,1,y)*matrices.getMatrixValueAt(b,x,1)
-            ret[i] = ret[i] + matrices.getMatrixValueAt(a,2,y)*matrices.getMatrixValueAt(b,x,2)
-            ret[i] = ret[i] + matrices.getMatrixValueAt(a,3,y)*matrices.getMatrixValueAt(b,x,3)
-            ret[i] = ret[i] + matrices.getMatrixValueAt(a,4,y)*matrices.getMatrixValueAt(b,x,4)
-            i = i + 1
-        end
-    end
-
-    return ret
-end
-
-return matrices
+return newMatrix

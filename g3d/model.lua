@@ -2,10 +2,13 @@
 -- january 2021
 -- MIT license
 
-local vectors = require(G3D_PATH .. "/vectors")
-local matrices = require(G3D_PATH .. "/matrices")
+local newMatrix = require(G3D_PATH .. "/matrices")
 local loadObjFile = require(G3D_PATH .. "/objloader")
 local collisions = require(G3D_PATH .. "/collisions")
+local vectors = require(G3D_PATH .. "/vectors")
+local fastCrossProduct = vectors.crossProduct
+local fastDotProduct = vectors.dotProduct
+local fastNormalize = vectors.normalize
 
 ----------------------------------------------------------------------------------------------------
 -- define a model class
@@ -32,15 +35,15 @@ end
 -- this returns a new instance of the model class
 -- a model must be given a .obj file or equivalent lua table, and a texture
 -- translation, rotation, and scale are all 3d vectors and are all optional
-local function newModel(given, texture, translation, rotation, scale)
+local function newModel(verts, texture, translation, rotation, scale)
     local self = setmetatable({}, model)
 
-    -- if given is a string, use it as a path to a .obj file
-    -- otherwise given is a table, use it as a model defintion
-    if type(given) == "string" then
-        given = loadObjFile(given)
+    -- if verts is a string, use it as a path to a .obj file
+    -- otherwise verts is a table, use it as a model defintion
+    if type(verts) == "string" then
+        verts = loadObjFile(verts)
     end
-    assert(given and type(given) == "table", "Corrupt vertices given to newModel")
+    assert(verts and type(verts) == "table", "Invalid vertices given to newModel")
 
     -- if texture is a string, use it as a path to an image file
     -- otherwise texture is already an image, so don't bother
@@ -49,10 +52,11 @@ local function newModel(given, texture, translation, rotation, scale)
     end
 
     -- initialize my variables
-    self.verts = given
+    self.verts = verts
     self.texture = texture
     self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
     self.mesh:setTexture(self.texture)
+    self.matrix = newMatrix()
     self:setTransform(translation or {0,0,0}, rotation or {0,0,0}, scale or {1,1,1})
     self:generateAABB()
 
@@ -67,22 +71,15 @@ function model:makeNormals(isFlipped)
         local v = self.verts[i+1]
         local vn = self.verts[i+2]
 
-        local vec1 = {v[1]-vp[1], v[2]-vp[2], v[3]-vp[3]}
-        local vec2 = {vn[1]-v[1], vn[2]-v[2], vn[3]-v[3]}
-        local normal = vectors.normalizeVector(vectors.crossProduct(vec1,vec2))
+        local n_1, n_2, n_3 = fastNormalize(fastCrossProduct(v[1]-vp[1], v[2]-vp[2], v[3]-vp[3], vn[1]-v[1], vn[2]-v[2], vn[3]-v[3]))
         local flippage = isFlipped and -1 or 1
+        n_1 = n_1 * flippage
+        n_2 = n_2 * flippage
+        n_3 = n_3 * flippage
 
-        vp[6] = normal[1] * flippage
-        vp[7] = normal[2] * flippage
-        vp[8] = normal[3] * flippage
-
-        v[6] = normal[1] * flippage
-        v[7] = normal[2] * flippage
-        v[8] = normal[3] * flippage
-
-        vn[6] = normal[1] * flippage
-        vn[7] = normal[2] * flippage
-        vn[8] = normal[3] * flippage
+        vp[6], v[6], vn[6] = n_1, n_1, n_1
+        vp[7], v[7], vn[7] = n_2, n_2, n_2
+        vp[8], v[8], vn[8] = n_3, n_3, n_3
     end
 end
 
@@ -103,10 +100,24 @@ function model:setTranslation(tx,ty,tz)
 end
 
 -- rotate given one 3d vector
+-- using euler angles
 function model:setRotation(rx,ry,rz)
     self.rotation[1] = rx
     self.rotation[2] = ry
     self.rotation[3] = rz
+    self.rotation[4] = nil
+    self:updateMatrix()
+end
+
+-- rotate given one quaternion
+function model:setQuaternionRotation(x,y,z,angle)
+    x,y,z = fastNormalize(x,y,z)
+
+    self.rotation[1] = x * math.sin(angle/2)
+    self.rotation[2] = y * math.sin(angle/2)
+    self.rotation[3] = z * math.sin(angle/2)
+    self.rotation[4] = math.cos(angle/2)
+
     self:updateMatrix()
 end
 
@@ -120,13 +131,14 @@ end
 
 -- update the model's transformation matrix
 function model:updateMatrix()
-    self.matrix = matrices.getTransformationMatrix(self.translation, self.rotation, self.scale)
+    self.matrix:setTransformationMatrix(self.translation, self.rotation, self.scale)
 end
 
 -- draw the model
-function model:draw()
-    love.graphics.setShader(self.shader)
-    self.shader:send("modelMatrix", self.matrix)
+function model:draw(shader)
+    local shader = shader or self.shader
+    love.graphics.setShader(shader)
+    shader:send("modelMatrix", self.matrix)
     love.graphics.draw(self.mesh)
     love.graphics.setShader()
 end
