@@ -57,6 +57,7 @@ function camera.lookAt(x,y,z, xAt,yAt,zAt)
     camera.target[3] = zAt
 
     -- update the fpsController's direction and pitch based on lookAt
+    -- thanks 4v0v!
     local dx,dy,dz = camera:getLookVector()
     fpsController.direction = math.pi/2 - math.atan2(dz, dx)
     fpsController.pitch = -math.atan2(dy, math.sqrt(dx^2 + dz^2))
