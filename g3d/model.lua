@@ -1,5 +1,5 @@
 -- written by groverbuger for g3d
--- january 2021
+-- february 2021
 -- MIT license
 
 local newMatrix = require(G3D_PATH .. "/matrices")
