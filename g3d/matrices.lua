@@ -3,9 +3,9 @@
 -- MIT license
 
 local vectors = require(G3D_PATH .. "/vectors")
-local fastCrossProduct = vectors.crossProduct
-local fastDotProduct = vectors.dotProduct
-local fastNormalize = vectors.normalize
+local vectorCrossProduct = vectors.crossProduct
+local vectorDotProduct = vectors.dotProduct
+local vectorNormalize = vectors.normalize
 
 ----------------------------------------------------------------------------------------------------
 -- matrix class
@@ -170,13 +170,13 @@ end
 -- returns a view matrix
 -- eye, target, and down are all 3d vectors
 function matrix:setViewMatrix(eye, target, down)
-    local z_1, z_2, z_3 = fastNormalize(eye[1] - target[1], eye[2] - target[2], eye[3] - target[3])
-    local x_1, x_2, x_3 = fastNormalize(fastCrossProduct(down[1], down[2], down[3], z_1, z_2, z_3))
-    local y_1, y_2, y_3 = fastCrossProduct(z_1, z_2, z_3, x_1, x_2, x_3)
+    local z_1, z_2, z_3 = vectorNormalize(eye[1] - target[1], eye[2] - target[2], eye[3] - target[3])
+    local x_1, x_2, x_3 = vectorNormalize(vectorCrossProduct(down[1], down[2], down[3], z_1, z_2, z_3))
+    local y_1, y_2, y_3 = vectorCrossProduct(z_1, z_2, z_3, x_1, x_2, x_3)
 
-    self[1],  self[2],  self[3],  self[4]  = x_1, x_2, x_3, -1*fastDotProduct(x_1, x_2, x_3, eye[1], eye[2], eye[3])
-    self[5],  self[6],  self[7],  self[8]  = y_1, y_2, y_3, -1*fastDotProduct(y_1, y_2, y_3, eye[1], eye[2], eye[3])
-    self[9],  self[10], self[11], self[12] = z_1, z_2, z_3, -1*fastDotProduct(z_1, z_2, z_3, eye[1], eye[2], eye[3])
+    self[1],  self[2],  self[3],  self[4]  = x_1, x_2, x_3, -1*vectorDotProduct(x_1, x_2, x_3, eye[1], eye[2], eye[3])
+    self[5],  self[6],  self[7],  self[8]  = y_1, y_2, y_3, -1*vectorDotProduct(y_1, y_2, y_3, eye[1], eye[2], eye[3])
+    self[9],  self[10], self[11], self[12] = z_1, z_2, z_3, -1*vectorDotProduct(z_1, z_2, z_3, eye[1], eye[2], eye[3])
     self[13], self[14], self[15], self[16] = 0, 0, 0, 1
 end
 

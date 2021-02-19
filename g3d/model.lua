@@ -6,9 +6,8 @@ local newMatrix = require(G3D_PATH .. "/matrices")
 local loadObjFile = require(G3D_PATH .. "/objloader")
 local collisions = require(G3D_PATH .. "/collisions")
 local vectors = require(G3D_PATH .. "/vectors")
-local fastCrossProduct = vectors.crossProduct
-local fastDotProduct = vectors.dotProduct
-local fastNormalize = vectors.normalize
+local vectorCrossProduct = vectors.crossProduct
+local vectorNormalize = vectors.normalize
 
 ----------------------------------------------------------------------------------------------------
 -- define a model class
@@ -71,7 +70,7 @@ function model:makeNormals(isFlipped)
         local v = self.verts[i+1]
         local vn = self.verts[i+2]
 
-        local n_1, n_2, n_3 = fastNormalize(fastCrossProduct(v[1]-vp[1], v[2]-vp[2], v[3]-vp[3], vn[1]-v[1], vn[2]-v[2], vn[3]-v[3]))
+        local n_1, n_2, n_3 = vectorNormalize(vectorCrossProduct(v[1]-vp[1], v[2]-vp[2], v[3]-vp[3], vn[1]-v[1], vn[2]-v[2], vn[3]-v[3]))
         local flippage = isFlipped and -1 or 1
         n_1 = n_1 * flippage
         n_2 = n_2 * flippage
@@ -111,7 +110,7 @@ end
 
 -- rotate given one quaternion
 function model:setQuaternionRotation(x,y,z,angle)
-    x,y,z = fastNormalize(x,y,z)
+    x,y,z = vectorNormalize(x,y,z)
 
     self.rotation[1] = x * math.sin(angle/2)
     self.rotation[2] = y * math.sin(angle/2)
