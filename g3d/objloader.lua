@@ -61,7 +61,6 @@ local function objLoader(path)
         if words[1] == "f" then
             local store = {}
 
-            -- TODO allow models with untriangulated faces
             assert(#words == 4, "Faces in "..path.." must be triangulated before they can be used in g3d!")
 
             for i=2, #words do
