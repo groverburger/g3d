@@ -108,15 +108,25 @@ function model:setRotation(rx,ry,rz)
     self:updateMatrix()
 end
 
--- rotate given one quaternion
-function model:setQuaternionRotation(x,y,z,angle)
+-- create a quaternion from an axis and an angle
+function model:setAxisAngleRotation(x,y,z,angle)
     x,y,z = vectorNormalize(x,y,z)
+    angle = angle / 2
 
-    self.rotation[1] = x * math.sin(angle/2)
-    self.rotation[2] = y * math.sin(angle/2)
-    self.rotation[3] = z * math.sin(angle/2)
-    self.rotation[4] = math.cos(angle/2)
+    self.rotation[1] = x * math.sin(angle)
+    self.rotation[2] = y * math.sin(angle)
+    self.rotation[3] = z * math.sin(angle)
+    self.rotation[4] = math.cos(angle)
 
+    self:updateMatrix()
+end
+
+-- rotate given one quaternion
+function model:setQuaternionRotation(x,y,z,w)
+    self.rotation[1] = x
+    self.rotation[2] = y
+    self.rotation[3] = z
+    self.rotation[4] = w
     self:updateMatrix()
 end
 
