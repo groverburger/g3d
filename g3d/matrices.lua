@@ -10,50 +10,33 @@ local vectorNormalize = vectors.normalize
 ----------------------------------------------------------------------------------------------------
 -- matrix class
 ----------------------------------------------------------------------------------------------------
--- matrices are 16 numbers in table, representing a 4x4 matrix
+-- matrices are 16 numbers in table, representing a 4x4 matrix like so:
+--
+-- |  1   2   3   4  |
+-- |                 |
+-- |  5   6   7   8  |
+-- |                 |
+-- |  9   10  11  12 |
+-- |                 |
+-- |  13  14  15  16 |
 
 local matrix = {}
 matrix.__index = matrix
 
 local function newMatrix()
     local self = setmetatable({}, matrix)
-    self:identity()
-    return self
-end
 
-function matrix:identity()
+    -- initialize a matrix as the identity matrix
     self[1],  self[2],  self[3],  self[4]  = 1, 0, 0, 0
     self[5],  self[6],  self[7],  self[8]  = 0, 1, 0, 0
     self[9],  self[10], self[11], self[12] = 0, 0, 1, 0
     self[13], self[14], self[15], self[16] = 0, 0, 0, 1
+
+    return self
 end
 
-function matrix:getValueAt(x,y)
-    return self[x + (y-1)*4]
-end
-
--- multiply this matrix and another matrix together
--- this matrix becomes the result of the multiplication operation
-local orig = newMatrix()
-function matrix:multiply(other)
-    -- hold the values of the original matrix
-    -- because the matrix is changing while it is used
-    for i=1, 16 do
-        orig[i] = self[i]
-    end
-
-    local i = 1
-    for y=1, 4 do
-        for x=1, 4 do
-            self[i] = orig:getValueAt(1,y)*other:getValueAt(x,1)
-            self[i] = self[i] + orig:getValueAt(2,y)*other:getValueAt(x,2)
-            self[i] = self[i] + orig:getValueAt(3,y)*other:getValueAt(x,3)
-            self[i] = self[i] + orig:getValueAt(4,y)*other:getValueAt(x,4)
-            i = i + 1
-        end
-    end
-end
-
+-- automatically converts a matrix to a string
+-- for printing to console and debugging
 function matrix:__tostring()
     local str = "[\n  "
     for i=1, 16 do
@@ -74,11 +57,11 @@ end
 -- these three matrices are all you need to write a simple 3d shader
 
 -- returns a transformation matrix
--- translation and rotation are 3d vectors
+-- translation, rotation, and scale are all 3d vectors
 function matrix:setTransformationMatrix(translation, rotation, scale)
     -- translations
-    self[4] = translation[1]
-    self[8] = translation[2]
+    self[4]  = translation[1]
+    self[8]  = translation[2]
     self[12] = translation[3]
 
     -- rotations
