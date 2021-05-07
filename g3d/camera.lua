@@ -1,9 +1,9 @@
 -- written by groverbuger for g3d
--- february 2021
+-- may 2021
 -- MIT license
 
-local shader = require(G3D_PATH .. "/shader")
-local newMatrix = require(G3D_PATH .. "/matrices")
+local newMatrix = require(g3d.path .. "/matrices")
+local g3d = g3d -- save a reference to g3d in case the user makes it non-global
 
 ----------------------------------------------------------------------------------------------------
 -- define the camera singleton
@@ -34,7 +34,7 @@ function camera.getDirectionPitch()
 end
 
 -- convenient function to return the camera's normalized look vector
-function camera:getLookVector()
+function camera.getLookVector()
     local vx = camera.target[1] - camera.position[1]
     local vy = camera.target[2] - camera.position[2]
     local vz = camera.target[3] - camera.position[3]
@@ -58,7 +58,7 @@ function camera.lookAt(x,y,z, xAt,yAt,zAt)
 
     -- update the fpsController's direction and pitch based on lookAt
     -- thanks 4v0v!
-    local dx,dy,dz = camera:getLookVector()
+    local dx,dy,dz = camera.getLookVector()
     fpsController.direction = math.pi/2 - math.atan2(dz, dx)
     fpsController.pitch = -math.atan2(dy, math.sqrt(dx^2 + dz^2))
 
@@ -96,21 +96,21 @@ end
 -- and send the matrix to the shader specified, or the default shader
 function camera.updateViewMatrix(shaderGiven)
     camera.viewMatrix:setViewMatrix(camera.position, camera.target, camera.down);
-    (shaderGiven or shader):send("viewMatrix", camera.viewMatrix)
+    (shaderGiven or g3d.shader):send("viewMatrix", camera.viewMatrix)
 end
 
 -- recreate the camera's projection matrix from its current values
 -- and send the matrix to the shader specified, or the default shader
 function camera.updateProjectionMatrix(shaderGiven)
     camera.projectionMatrix:setProjectionMatrix(camera.fov, camera.nearClip, camera.farClip, camera.aspectRatio);
-    (shaderGiven or shader):send("projectionMatrix", camera.projectionMatrix)
+    (shaderGiven or g3d.shader):send("projectionMatrix", camera.projectionMatrix)
 end
 
 -- recreate the camera's orthographic projection matrix from its current values
 -- and send the matrix to the shader specified, or the default shader
 function camera.updateOrthographicMatrix(size, shaderGiven)
     camera.projectionMatrix:setOrthographicMatrix(camera.fov, size or 5, camera.nearClip, camera.farClip, camera.aspectRatio);
-    (shaderGiven or shader):send("projectionMatrix", camera.projectionMatrix)
+    (shaderGiven or g3d.shader):send("projectionMatrix", camera.projectionMatrix)
 end
 
 -- simple first person camera movement with WASD

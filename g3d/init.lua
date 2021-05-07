@@ -1,5 +1,5 @@
 -- written by groverbuger for g3d
--- february 2021
+-- may 2021
 -- MIT license
 
 --[[
@@ -14,12 +14,8 @@
    \_/__/                
 --]]
 
--- add the path to g3d to the global namespace
--- so submodules can know how to load their dependencies
-G3D_PATH = ...
-
-local g3d = {
-    _VERSION     = "g3d 1.3",
+g3d = {
+    _VERSION     = "g3d 1.4",
     _DESCRIPTION = "Simple and easy 3D engine for LÖVE.",
     _URL         = "https://github.com/groverburger/g3d",
     _LICENSE     = [[
@@ -44,19 +40,21 @@ local g3d = {
         LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
         SOFTWARE.
-   ]],
+    ]],
+    path = ...,
 }
 
-g3d.newModel = require(G3D_PATH .. "/model")
-g3d.camera = require(G3D_PATH .. "/camera")
+-- the shader is what does the heavy lifting, displaying 3D meshes on your 2D monitor
+g3d.shader = love.graphics.newShader(g3d.path .. "/default.vert", g3d.path .. "/default.frag")
+g3d.newModel = require(g3d.path .. "/model")
+g3d.camera = require(g3d.path .. "/camera")
 g3d.camera.updateProjectionMatrix()
 g3d.camera.updateViewMatrix()
 
 -- so that far polygons don't overlap near polygons
 love.graphics.setDepthMode("lequal", true)
 
--- get rid of G3D_PATH from the global namespace
--- so the end user doesn't have to worry about any globals
-G3D_PATH = nil
-
+-- get rid of g3d from the global namespace and return it instead
+local g3d = g3d
+_G.g3d = nil
 return g3d

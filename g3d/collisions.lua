@@ -1,8 +1,8 @@
 -- written by groverbuger for g3d
--- february 2021
+-- may 2021
 -- MIT license
 
-local vectors = require(G3D_PATH .. "/vectors")
+local vectors = require(g3d.path .. "/vectors")
 local fastSubtract = vectors.subtract
 local vectorAdd = vectors.add
 local vectorCrossProduct = vectors.crossProduct
@@ -318,6 +318,8 @@ local function triangleCapsule(
 end
 
 -- finds whether or not a triangle is inside an AABB
+-- NOTE: this only works with AABBs that are cubes! may not give the correct result for non-cube AABBs
+-- TODO: replace this with seperating axis theorem
 local function triangleAABB(
         tri_0_x, tri_0_y, tri_0_z,
         tri_1_x, tri_1_y, tri_1_z,

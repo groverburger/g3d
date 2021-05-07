@@ -1,11 +1,11 @@
 -- written by groverbuger for g3d
--- february 2021
+-- may 2021
 -- MIT license
 
-local newMatrix = require(G3D_PATH .. "/matrices")
-local loadObjFile = require(G3D_PATH .. "/objloader")
-local collisions = require(G3D_PATH .. "/collisions")
-local vectors = require(G3D_PATH .. "/vectors")
+local newMatrix = require(g3d.path .. "/matrices")
+local loadObjFile = require(g3d.path .. "/objloader")
+local collisions = require(g3d.path .. "/collisions")
+local vectors = require(g3d.path .. "/vectors")
 local vectorCrossProduct = vectors.crossProduct
 local vectorNormalize = vectors.normalize
 
@@ -24,7 +24,7 @@ model.vertexFormat = {
     {"VertexNormal", "float", 3},
     {"VertexColor", "byte", 4},
 }
-model.shader = require(G3D_PATH .. "/shader")
+model.shader = g3d.shader
 
 -- model class imports functions from the collisions library
 for key,value in pairs(collisions) do
@@ -150,6 +150,54 @@ function model:draw(shader)
     shader:send("modelMatrix", self.matrix)
     love.graphics.draw(self.mesh)
     love.graphics.setShader()
+end
+
+-- the fallback function if ffi was not loaded
+function model:compress()
+    print("[g3d warning] Compression requires FFI!\n" .. debug.traceback())
+end
+
+-- makes models use less memory when loaded in ram
+-- by storing the vertex data in an array of vertix structs instead of lua tables
+-- requires ffi
+-- note: throws away the model's verts table
+local success, ffi = pcall(require, "ffi")
+if success then
+    ffi.cdef([[
+        struct vertex {
+            float x, y, z;
+            float u, v;
+            float nx, ny, nz;
+            uint8_t r, g, b, a;
+        }
+    ]])
+
+    function model:compress()
+        local data = love.data.newByteData(ffi.sizeof("struct vertex") * #self.verts)
+        local datapointer = ffi.cast("struct vertex *", data:getFFIPointer())
+
+        for i, vert in ipairs(self.verts) do
+            local dataindex = i - 1
+            datapointer[dataindex].x  = vert[1]
+            datapointer[dataindex].y  = vert[2]
+            datapointer[dataindex].z  = vert[3]
+            datapointer[dataindex].u  = vert[4] or 0
+            datapointer[dataindex].v  = vert[5] or 0
+            datapointer[dataindex].nx = vert[6] or 0
+            datapointer[dataindex].ny = vert[7] or 0
+            datapointer[dataindex].nz = vert[8] or 0
+            datapointer[dataindex].r  = (vert[9] or 1)*255
+            datapointer[dataindex].g  = (vert[10] or 1)*255
+            datapointer[dataindex].b  = (vert[11] or 1)*255
+            datapointer[dataindex].a  = (vert[12] or 1)*255
+        end
+
+        self.mesh:release()
+        self.mesh = love.graphics.newMesh(self.vertexFormat, #self.verts, "triangles")
+        self.mesh:setVertices(data)
+        self.mesh:setTexture(self.texture)
+        self.verts = nil
+    end
 end
 
 return newModel

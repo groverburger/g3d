@@ -1,8 +1,8 @@
 -- written by groverbuger for g3d
--- february 2021
+-- may 2021
 -- MIT license
 
-local vectors = require(G3D_PATH .. "/vectors")
+local vectors = require(g3d.path .. "/vectors")
 local vectorCrossProduct = vectors.crossProduct
 local vectorDotProduct = vectors.dotProduct
 local vectorNormalize = vectors.normalize
@@ -55,19 +55,16 @@ function matrix:multiply(other)
 end
 
 function matrix:__tostring()
-    local str = ""
-
+    local str = "[\n  "
     for i=1, 16 do
         str = str .. self[i]
-
         if i%4 == 0 and i > 1 then
-            str = str .. "\n"
+            str = str .. (i < 16 and "\n  " or "\n")
         else
             str = str .. ", "
         end
     end
-
-    return str
+    return str .. "]"
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -78,10 +75,7 @@ end
 
 -- returns a transformation matrix
 -- translation and rotation are 3d vectors
-local temp = newMatrix()
 function matrix:setTransformationMatrix(translation, rotation, scale)
-    self:identity()
-
     -- translations
     self[4] = translation[1]
     self[8] = translation[2]
@@ -90,47 +84,28 @@ function matrix:setTransformationMatrix(translation, rotation, scale)
     -- rotations
     if #rotation == 3 then
         -- use 3D rotation vector as euler angles
-        -- x
-        temp:identity()
-        temp[6] = math.cos(rotation[1])
-        temp[7] = -1*math.sin(rotation[1])
-        temp[10] = math.sin(rotation[1])
-        temp[11] = math.cos(rotation[1])
-        self:multiply(temp)
-
-        -- y
-        temp:identity()
-        temp[1] = math.cos(rotation[2])
-        temp[3] = math.sin(rotation[2])
-        temp[9] = -1*math.sin(rotation[2])
-        temp[11] = math.cos(rotation[2])
-        self:multiply(temp)
-
-        -- z
-        temp:identity()
-        temp[1] = math.cos(rotation[3])
-        temp[2] = -1*math.sin(rotation[3])
-        temp[5] = math.sin(rotation[3])
-        temp[6] = math.cos(rotation[3])
-        self:multiply(temp)
+        -- source: https://en.wikipedia.org/wiki/Rotation_matrix
+        local ca, cb, cc = math.cos(rotation[1]), math.cos(rotation[2]), math.cos(rotation[3])
+        local sa, sb, sc = math.sin(rotation[1]), math.sin(rotation[2]), math.sin(rotation[3])
+        self[1], self[2],  self[3]  = ca*cb, ca*sb*sc - sa*cc, ca*sb*cc + sa*sc
+        self[5], self[6],  self[7]  = sa*cb, sa*sb*sc + ca*cc, sa*sb*cc - ca*sc
+        self[9], self[10], self[11] = -sb, cb*sc, cb*cc
     else
-        -- use 4D rotation vector as quaternion
-        temp:identity()
-
-        local qx,qy,qz,qw = rotation[1], rotation[2], rotation[3], rotation[4]
-        temp[1], temp[2],  temp[3]  = 1 - 2*qy^2 - 2*qz^2, 2*qx*qy - 2*qz*qw,   2*qx*qz + 2*qy*qw
-        temp[5], temp[6],  temp[7]  = 2*qx*qy + 2*qz*qw,   1 - 2*qx^2 - 2*qz^2, 2*qy*qz - 2*qx*qw
-        temp[9], temp[10], temp[11] = 2*qx*qz - 2*qy*qw,   2*qy*qz + 2*qx*qw,   1 - 2*qx^2 - 2*qy^2
-
-        self:multiply(temp)
+        -- use 4D rotation vector as a quaternion
+        local qx, qy, qz, qw = rotation[1], rotation[2], rotation[3], rotation[4]
+        self[1], self[2],  self[3]  = 1 - 2*qy^2 - 2*qz^2, 2*qx*qy - 2*qz*qw,   2*qx*qz + 2*qy*qw
+        self[5], self[6],  self[7]  = 2*qx*qy + 2*qz*qw,   1 - 2*qx^2 - 2*qz^2, 2*qy*qz - 2*qx*qw
+        self[9], self[10], self[11] = 2*qx*qz - 2*qy*qw,   2*qy*qz + 2*qx*qw,   1 - 2*qx^2 - 2*qy^2
     end
 
     -- scale
-    temp:identity()
-    temp[1] = scale[1]
-    temp[6] = scale[2]
-    temp[11] = scale[3]
-    self:multiply(temp)
+    local sx, sy, sz = scale[1], scale[2], scale[3]
+    self[1], self[2],  self[3]  = self[1] * sx, self[2]  * sy,  self[3]  * sz
+    self[5], self[6],  self[7]  = self[5] * sx, self[6]  * sy,  self[7]  * sz
+    self[9], self[10], self[11] = self[9] * sx, self[10] * sy,  self[11] * sz
+
+    -- fourth row is not used, just set it to the fourth row of the identity matrix
+    self[13], self[14], self[15], self[16] = 0, 0, 0, 1
 
     return self
 end

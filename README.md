@@ -1,6 +1,6 @@
 ![g3d_logo](https://user-images.githubusercontent.com/19754251/91235387-502bb980-e6ea-11ea-9d12-74f762f69859.png)
 
-groverburger's 3D engine (g3d) simplifies [LÖVE](http://love2d.org)'s 3d capabilities to be as simple as possible.<br/>
+groverburger's 3D engine (g3d) simplifies [LÖVE](http://love2d.org)'s 3d capabilities to be as simple to use as possible.<br/>
 View the original forum post [here](https://love2d.org/forums/viewtopic.php?f=5&t=86350).
 
 ![pic1](demo.gif)
@@ -11,6 +11,7 @@ View the original forum post [here](https://love2d.org/forums/viewtopic.php?f=5&
 - .obj file loading
 - Basic first person movement and camera controls
 - Perspective and orthographic projections
+- Basic collision functions
 - Simple, commented, and organized
 
 ## Getting Started
@@ -34,33 +35,31 @@ For more information, check out the [g3d wiki](https://github.com/groverburger/g
 The entire `main.lua` file for the Earth and Moon demo is under 30 lines, as shown here:
 ```lua
 -- written by groverbuger for g3d
--- january 2021
+-- may 2021
 -- MIT license
 
-g3d = require "g3d"
-
-function love.load()
-    Earth = g3d.newModel("assets/sphere.obj", "assets/earth.png", {0,0,4})
-    Moon = g3d.newModel("assets/sphere.obj", "assets/moon.png", {5,0,4}, nil, {0.5,0.5,0.5})
-    Background = g3d.newModel("assets/sphere.obj", "assets/starfield.png", {0,0,0}, nil, {500,500,500})
-    Timer = 0
-end
+local g3d = require "g3d"
+local earth = g3d.newModel("assets/sphere.obj", "assets/earth.png", {0,0,4})
+local moon = g3d.newModel("assets/sphere.obj", "assets/moon.png", {5,0,4}, nil, {0.5,0.5,0.5})
+local background = g3d.newModel("assets/sphere.obj", "assets/starfield.png", {0,0,0}, nil, {500,500,500})
+local timer = 0
 
 function love.mousemoved(x,y, dx,dy)
     g3d.camera.firstPersonLook(dx,dy)
 end
 
 function love.update(dt)
-    Timer = Timer + dt
-    Moon:setTranslation(math.cos(Timer)*5, 0, math.sin(Timer)*5 +4)
-    Moon:setRotation(0,-1*Timer,0)
+    timer = timer + dt
+    moon:setTranslation(math.cos(timer)*5, 0, math.sin(timer)*5 +4)
+    moon:setRotation(0,-timer,0)
     g3d.camera.firstPersonMovement(dt)
+    if love.keyboard.isDown("escape") then love.event.push("quit") end
 end
 
 function love.draw()
-    Earth:draw()
-    Moon:draw()
-    Background:draw()
+    earth:draw()
+    moon:draw()
+    background:draw()
 end
 ```
 
