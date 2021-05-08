@@ -83,9 +83,9 @@ function matrix:setTransformationMatrix(translation, rotation, scale)
 
     -- scale
     local sx, sy, sz = scale[1], scale[2], scale[3]
-    self[1], self[2],  self[3]  = self[1] * sx, self[2]  * sy,  self[3]  * sz
-    self[5], self[6],  self[7]  = self[5] * sx, self[6]  * sy,  self[7]  * sz
-    self[9], self[10], self[11] = self[9] * sx, self[10] * sy,  self[11] * sz
+    self[1], self[2],  self[3]  = self[1] * sx, self[2]  * sy, self[3]  * sz
+    self[5], self[6],  self[7]  = self[5] * sx, self[6]  * sy, self[7]  * sz
+    self[9], self[10], self[11] = self[9] * sx, self[10] * sy, self[11] * sz
 
     -- fourth row is not used, just set it to the fourth row of the identity matrix
     self[13], self[14], self[15], self[16] = 0, 0, 0, 1
