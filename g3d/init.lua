@@ -45,7 +45,7 @@ g3d = {
 }
 
 -- the shader is what does the heavy lifting, displaying 3D meshes on your 2D monitor
-g3d.shader = love.graphics.newShader(g3d.path .. "/default.vert", g3d.path .. "/default.frag")
+g3d.shader = love.graphics.newShader(g3d.path .. "/g3d.vert")
 g3d.newModel = require(g3d.path .. "/model")
 g3d.camera = require(g3d.path .. "/camera")
 g3d.camera.updateProjectionMatrix()
