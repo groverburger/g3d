@@ -89,8 +89,6 @@ function matrix:setTransformationMatrix(translation, rotation, scale)
 
     -- fourth row is not used, just set it to the fourth row of the identity matrix
     self[13], self[14], self[15], self[16] = 0, 0, 0, 1
-
-    return self
 end
 
 -- returns a perspective projection matrix
