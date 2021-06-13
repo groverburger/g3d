@@ -148,6 +148,7 @@ function model:draw(shader)
     local shader = shader or self.shader
     love.graphics.setShader(shader)
     shader:send("modelMatrix", self.matrix)
+    shader:send("isCanvasEnabled", love.graphics.getCanvas() ~= nil)
     love.graphics.draw(self.mesh)
     love.graphics.setShader()
 end
