@@ -16,7 +16,7 @@ local camera = {
     aspectRatio = love.graphics.getWidth()/love.graphics.getHeight(),
     position = {0,0,0},
     target = {0,0,1},
-    down = {0,-1,0},
+    up = {0,-1,0},
 
     viewMatrix = newMatrix(),
     projectionMatrix = newMatrix(),
@@ -95,7 +95,7 @@ end
 -- recreate the camera's view matrix from its current values
 -- and send the matrix to the shader specified, or the default shader
 function camera.updateViewMatrix(shaderGiven)
-    camera.viewMatrix:setViewMatrix(camera.position, camera.target, camera.down);
+    camera.viewMatrix:setViewMatrix(camera.position, camera.target, camera.up);
     (shaderGiven or g3d.shader):send("viewMatrix", camera.viewMatrix)
 end
 
@@ -120,15 +120,15 @@ function camera.firstPersonMovement(dt)
     local moveX,moveY = 0,0
     local cameraMoved = false
     local speed = 9
-    if love.keyboard.isDown("w") then moveY = moveY - 1 end
-    if love.keyboard.isDown("a") then moveX = moveX - 1 end
-    if love.keyboard.isDown("s") then moveY = moveY + 1 end
-    if love.keyboard.isDown("d") then moveX = moveX + 1 end
-    if love.keyboard.isDown("space") then
+    if love.keyboard.isDown "w" then moveY = moveY - 1 end
+    if love.keyboard.isDown "a" then moveX = moveX - 1 end
+    if love.keyboard.isDown "s" then moveY = moveY + 1 end
+    if love.keyboard.isDown "d" then moveX = moveX + 1 end
+    if love.keyboard.isDown "space" then
         camera.position[2] = camera.position[2] - speed*dt
         cameraMoved = true
     end
-    if love.keyboard.isDown("lshift") then
+    if love.keyboard.isDown "lshift" then
         camera.position[2] = camera.position[2] + speed*dt
         cameraMoved = true
     end
