@@ -95,22 +95,25 @@ end
 -- recreate the camera's view matrix from its current values
 -- and send the matrix to the shader specified, or the default shader
 function camera.updateViewMatrix(shaderGiven)
-    camera.viewMatrix:setViewMatrix(camera.position, camera.target, camera.up);
-    (shaderGiven or g3d.shader):send("viewMatrix", camera.viewMatrix)
+    local shader = shaderGiven or g3d.shader
+    camera.viewMatrix:setViewMatrix(camera.position, camera.target, camera.up)
+    shader:send("viewMatrix", camera.viewMatrix)
 end
 
 -- recreate the camera's projection matrix from its current values
 -- and send the matrix to the shader specified, or the default shader
 function camera.updateProjectionMatrix(shaderGiven)
-    camera.projectionMatrix:setProjectionMatrix(camera.fov, camera.nearClip, camera.farClip, camera.aspectRatio);
-    (shaderGiven or g3d.shader):send("projectionMatrix", camera.projectionMatrix)
+    local shader = shaderGiven or g3d.shader
+    camera.projectionMatrix:setProjectionMatrix(camera.fov, camera.nearClip, camera.farClip, camera.aspectRatio)
+    shader:send("projectionMatrix", camera.projectionMatrix)
 end
 
 -- recreate the camera's orthographic projection matrix from its current values
 -- and send the matrix to the shader specified, or the default shader
-function camera.updateOrthographicMatrix(size, shaderGiven)
-    camera.projectionMatrix:setOrthographicMatrix(camera.fov, size or 5, camera.nearClip, camera.farClip, camera.aspectRatio);
-    (shaderGiven or g3d.shader):send("projectionMatrix", camera.projectionMatrix)
+function camera.updateOrthographicMatrix(shaderGiven, size)
+    local shader = shaderGiven or g3d.shader
+    camera.projectionMatrix:setOrthographicMatrix(camera.fov, size or 5, camera.nearClip, camera.farClip, camera.aspectRatio)
+    shader:send("projectionMatrix", camera.projectionMatrix)
 end
 
 -- simple first person camera movement with WASD
