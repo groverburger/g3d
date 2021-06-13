@@ -117,7 +117,7 @@ end
 -- put this local function in your love.update to use, passing in dt
 function camera.firstPersonMovement(dt)
     -- collect inputs
-    local moveX,moveY = 0,0
+    local moveX, moveY = 0, 0
     local cameraMoved = false
     local speed = 9
     if love.keyboard.isDown "w" then moveY = moveY - 1 end
@@ -136,11 +136,9 @@ function camera.firstPersonMovement(dt)
     -- do some trigonometry on the inputs to make movement relative to camera's direction
     -- also to make the player not move faster in diagonal directions
     if moveX ~= 0 or moveY ~= 0 then
-        local angle = math.atan2(moveY,moveX)
-        local directionX,directionZ = math.cos(fpsController.direction + angle)*speed*dt, math.sin(fpsController.direction + angle + math.pi)*speed*dt
-
-        camera.position[1] = camera.position[1] + directionX
-        camera.position[3] = camera.position[3] + directionZ
+        local angle = math.atan2(moveY, moveX)
+        camera.position[1] = camera.position[1] + math.cos(fpsController.direction + angle) * speed * dt
+        camera.position[3] = camera.position[3] + math.sin(fpsController.direction + angle + math.pi) * speed * dt
         cameraMoved = true
     end
 
