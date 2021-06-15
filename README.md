@@ -22,13 +22,13 @@ View the original forum post [here](https://love2d.org/forums/viewtopic.php?f=5&
 
 For more information, check out the [g3d wiki](https://github.com/groverburger/g3d/wiki)!
 
-## Games made with g3d
+## Games and demos made with g3d
 
 [Hoarder's Horrible House of Stuff](https://alesan99.itch.io/hoarders-horrible-house-of-stuff) by alesan99<br/>
 ![Hoarder's Gif](https://img.itch.zone/aW1hZ2UvODY2NDc3LzQ4NjYzMDcuZ2lm/original/byZGOE.gif)
 
-[Flamerunner](https://groverburger.itch.io/flamerunner) by groverburger (that's me!)<br/>
-![Flamerunner Gif](https://img.itch.zone/aW1nLzMzMDU0NzMuZ2lm/original/%2BM%2F78x.gif)
+[First Person Test](https://github.com/groverburger/g3d_fps) by groverburger (that's me!)<br/>
+![First Person Test Gif](https://user-images.githubusercontent.com/19754251/108477667-6012f900-7248-11eb-97e9-8fbc03a09a99.gif)
 
 ## Demo Code
 
