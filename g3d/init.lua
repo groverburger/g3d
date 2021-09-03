@@ -1,5 +1,5 @@
 -- written by groverbuger for g3d
--- may 2021
+-- september 2021
 -- MIT license
 
 --[[
@@ -15,7 +15,7 @@
 --]]
 
 g3d = {
-    _VERSION     = "g3d 1.4",
+    _VERSION     = "g3d 1.5",
     _DESCRIPTION = "Simple and easy 3D engine for LÖVE.",
     _URL         = "https://github.com/groverburger/g3d",
     _LICENSE     = [[
@@ -42,10 +42,11 @@ g3d = {
         SOFTWARE.
     ]],
     path = ...,
+    shader = ... .. "/g3d.vert",
 }
 
 -- the shader is what does the heavy lifting, displaying 3D meshes on your 2D monitor
-g3d.shader = love.graphics.newShader(g3d.path .. "/g3d.vert")
+g3d.shader = love.graphics.newShader(g3d.shader)
 g3d.newModel = require(g3d.path .. "/model")
 g3d.camera = require(g3d.path .. "/camera")
 g3d.camera.updateProjectionMatrix()

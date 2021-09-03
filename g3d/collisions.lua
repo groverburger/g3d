@@ -1,5 +1,5 @@
 -- written by groverbuger for g3d
--- may 2021
+-- september 2021
 -- MIT license
 
 local vectors = require(g3d.path .. "/vectors")

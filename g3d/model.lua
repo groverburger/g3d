@@ -1,5 +1,5 @@
 -- written by groverbuger for g3d
--- may 2021
+-- september 2021
 -- MIT license
 
 local newMatrix = require(g3d.path .. "/matrices")
@@ -56,6 +56,7 @@ local function newModel(verts, texture, translation, rotation, scale)
     self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
     self.mesh:setTexture(self.texture)
     self.matrix = newMatrix()
+    if type(scale) == "number" then scale = {scale, scale, scale} end
     self:setTransform(translation or {0,0,0}, rotation or {0,0,0}, scale or {1,1,1})
     self:generateAABB()
 
@@ -66,20 +67,22 @@ end
 -- if true is passed in, then the normals are all flipped
 function model:makeNormals(isFlipped)
     for i=1, #self.verts, 3 do
+        if isFlipped then
+            self.verts[i+1], self.verts[i+2] = self.verts[i+2], self.verts[i+1]
+        end
+
         local vp = self.verts[i]
         local v = self.verts[i+1]
         local vn = self.verts[i+2]
 
         local n_1, n_2, n_3 = vectorNormalize(vectorCrossProduct(v[1]-vp[1], v[2]-vp[2], v[3]-vp[3], vn[1]-v[1], vn[2]-v[2], vn[3]-v[3]))
-        local flippage = isFlipped and -1 or 1
-        n_1 = n_1 * flippage
-        n_2 = n_2 * flippage
-        n_3 = n_3 * flippage
-
         vp[6], v[6], vn[6] = n_1, n_1, n_1
         vp[7], v[7], vn[7] = n_2, n_2, n_2
         vp[8], v[8], vn[8] = n_3, n_3, n_3
     end
+
+    self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
+    self.mesh:setTexture(self.texture)
 end
 
 -- move and rotate given two 3d vectors
@@ -148,7 +151,9 @@ function model:draw(shader)
     local shader = shader or self.shader
     love.graphics.setShader(shader)
     shader:send("modelMatrix", self.matrix)
-    shader:send("isCanvasEnabled", love.graphics.getCanvas() ~= nil)
+    if shader:hasUniform "isCanvasEnabled" then
+        shader:send("isCanvasEnabled", love.graphics.getCanvas() ~= nil)
+    end
     love.graphics.draw(self.mesh)
     love.graphics.setShader()
 end

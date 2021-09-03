@@ -1,5 +1,5 @@
 -- written by groverbuger for g3d
--- may 2021
+-- september 2021
 -- MIT license
 
 local newMatrix = require(g3d.path .. "/matrices")
@@ -15,8 +15,8 @@ local camera = {
     farClip = 1000,
     aspectRatio = love.graphics.getWidth()/love.graphics.getHeight(),
     position = {0,0,0},
-    target = {0,0,1},
-    up = {0,-1,0},
+    target = {1,0,0},
+    up = {0,0,1},
 
     viewMatrix = newMatrix(),
     projectionMatrix = newMatrix(),
@@ -25,7 +25,7 @@ local camera = {
 -- private variables used only for the first person camera functions
 local fpsController = {
     direction = 0,
-    pitch = 0
+    pitch = 0,
 }
 
 -- read-only variables, can't be set by the end user
@@ -57,10 +57,9 @@ function camera.lookAt(x,y,z, xAt,yAt,zAt)
     camera.target[3] = zAt
 
     -- update the fpsController's direction and pitch based on lookAt
-    -- thanks 4v0v!
     local dx,dy,dz = camera.getLookVector()
     fpsController.direction = math.pi/2 - math.atan2(dz, dx)
-    fpsController.pitch = -math.atan2(dy, math.sqrt(dx^2 + dz^2))
+    fpsController.pitch = math.atan2(dy, math.sqrt(dx^2 + dz^2))
 
     -- update the camera in the shader
     camera.updateViewMatrix()
@@ -75,8 +74,6 @@ function camera.lookInDirection(x,y,z, directionTowards,pitchTowards)
     fpsController.direction = directionTowards or fpsController.direction
     fpsController.pitch = pitchTowards or fpsController.pitch
 
-    -- convert the direction and pitch into a target point
-
     -- turn the cos of the pitch into a sign value, either 1, -1, or 0
     local sign = math.cos(fpsController.pitch)
     sign = (sign > 0 and 1) or (sign < 0 and -1) or 0
@@ -84,9 +81,10 @@ function camera.lookInDirection(x,y,z, directionTowards,pitchTowards)
     -- don't let cosPitch ever hit 0, because weird camera glitches will happen
     local cosPitch = sign*math.max(math.abs(math.cos(fpsController.pitch)), 0.00001)
 
-    camera.target[1] = camera.position[1]+math.sin(fpsController.direction)*cosPitch
-    camera.target[2] = camera.position[2]-math.sin(fpsController.pitch)
-    camera.target[3] = camera.position[3]+math.cos(fpsController.direction)*cosPitch
+    -- convert the direction and pitch into a target point
+    camera.target[1] = camera.position[1]+math.cos(fpsController.direction)*cosPitch
+    camera.target[2] = camera.position[2]+math.sin(fpsController.direction)*cosPitch
+    camera.target[3] = camera.position[3]+math.sin(fpsController.pitch)
 
     -- update the camera in the shader
     camera.updateViewMatrix()
@@ -123,16 +121,16 @@ function camera.firstPersonMovement(dt)
     local moveX, moveY = 0, 0
     local cameraMoved = false
     local speed = 9
-    if love.keyboard.isDown "w" then moveY = moveY - 1 end
-    if love.keyboard.isDown "a" then moveX = moveX - 1 end
-    if love.keyboard.isDown "s" then moveY = moveY + 1 end
-    if love.keyboard.isDown "d" then moveX = moveX + 1 end
+    if love.keyboard.isDown "w" then moveX = moveX + 1 end
+    if love.keyboard.isDown "a" then moveY = moveY + 1 end
+    if love.keyboard.isDown "s" then moveX = moveX - 1 end
+    if love.keyboard.isDown "d" then moveY = moveY - 1 end
     if love.keyboard.isDown "space" then
-        camera.position[2] = camera.position[2] - speed*dt
+        camera.position[3] = camera.position[3] + speed*dt
         cameraMoved = true
     end
     if love.keyboard.isDown "lshift" then
-        camera.position[2] = camera.position[2] + speed*dt
+        camera.position[3] = camera.position[3] - speed*dt
         cameraMoved = true
     end
 
@@ -141,7 +139,7 @@ function camera.firstPersonMovement(dt)
     if moveX ~= 0 or moveY ~= 0 then
         local angle = math.atan2(moveY, moveX)
         camera.position[1] = camera.position[1] + math.cos(fpsController.direction + angle) * speed * dt
-        camera.position[3] = camera.position[3] + math.sin(fpsController.direction + angle + math.pi) * speed * dt
+        camera.position[2] = camera.position[2] + math.sin(fpsController.direction + angle) * speed * dt
         cameraMoved = true
     end
 
@@ -158,7 +156,7 @@ function camera.firstPersonLook(dx,dy)
     love.mouse.setRelativeMode(true)
 
     local sensitivity = 1/300
-    fpsController.direction = fpsController.direction + dx*sensitivity
+    fpsController.direction = fpsController.direction - dx*sensitivity
     fpsController.pitch = math.max(math.min(fpsController.pitch - dy*sensitivity, math.pi*0.5), math.pi*-0.5)
 
     camera.lookInDirection(camera.position[1],camera.position[2],camera.position[3], fpsController.direction,fpsController.pitch)
