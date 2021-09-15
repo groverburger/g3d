@@ -33,9 +33,8 @@ vec4 position(mat4 transformProjection, vec4 vertexPosition) {
     // for some reason models are flipped vertically when rendering to a canvas
     // so we need to detect when this is being rendered to a canvas, and flip it back
     if (isCanvasEnabled) {
-        screenPosition.y *= -1;
+        screenPosition.y *= -1.0;
     }
 
     return screenPosition;
 }
-
