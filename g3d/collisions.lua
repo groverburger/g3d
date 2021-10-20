@@ -353,12 +353,19 @@ local function findClosest(self, verts, func, ...)
     local finalLength, where_x, where_y, where_z, norm_x, norm_y, norm_z
 
     -- cache references to this model's properties for efficiency
-    local translation_x = self.translation[1]
-    local translation_y = self.translation[2]
-    local translation_z = self.translation[3]
-    local scale_x = self.scale[1]
-    local scale_y = self.scale[2]
-    local scale_z = self.scale[3]
+    local translation_x, translation_y, translation_z, scale_x, scale_y, scale_z = 0, 0, 0, 1, 1, 1
+    if self then
+        if self.translation then
+            translation_x = self.translation[1]
+            translation_y = self.translation[2]
+            translation_z = self.translation[3]
+        end
+        if self.scale then
+            scale_x = self.scale[1]
+            scale_y = self.scale[2]
+            scale_z = self.scale[3]
+        end
+    end
 
     for v=1, #verts, 3 do
         -- apply the function given with the arguments given
@@ -408,19 +415,78 @@ local function findClosest(self, verts, func, ...)
     return finalLength, where_x, where_y, where_z, norm_x, norm_y, norm_z
 end
 
-function collisions:rayIntersection(src_x, src_y, src_z, dir_x, dir_y, dir_z)
-    return findClosest(self, self.verts, triangleRay, src_x, src_y, src_z, dir_x, dir_y, dir_z)
+-- runs a given intersection function on all of the triangles made up of a given vert table
+local function findAny(self, verts, func, ...)
+    -- cache references to this model's properties for efficiency
+    local translation_x, translation_y, translation_z, scale_x, scale_y, scale_z = 0, 0, 0, 1, 1, 1
+    if self then
+        if self.translation then
+            translation_x = self.translation[1]
+            translation_y = self.translation[2]
+            translation_z = self.translation[3]
+        end
+        if self.scale then
+            scale_x = self.scale[1]
+            scale_y = self.scale[2]
+            scale_z = self.scale[3]
+        end
+    end
+
+    for v=1, #verts, 3 do
+        -- apply the function given with the arguments given
+        -- also supply the points of the current triangle
+        local n_x, n_y, n_z = vectorNormalize(
+            verts[v][6]*scale_x,
+            verts[v][7]*scale_x,
+            verts[v][8]*scale_x
+        )
+
+        local length = func(
+            verts[v][1]*scale_x + translation_x,
+            verts[v][2]*scale_y + translation_y,
+            verts[v][3]*scale_z + translation_z,
+            verts[v+1][1]*scale_x + translation_x,
+            verts[v+1][2]*scale_y + translation_y,
+            verts[v+1][3]*scale_z + translation_z,
+            verts[v+2][1]*scale_x + translation_x,
+            verts[v+2][2]*scale_y + translation_y,
+            verts[v+2][3]*scale_z + translation_z,
+            n_x,
+            n_y,
+            n_z,
+            ...
+        )
+
+        -- if something was hit
+        -- and either the finalLength is not yet defined or the new length is closer
+        -- then update the collision information
+        if length then return true end
+    end
+
+    return false
 end
 
-function collisions:sphereIntersection(src_x, src_y, src_z, radius)
-    return findClosest(self, self.verts, triangleSphere, src_x, src_y, src_z, radius)
+----------------------------------------------------------------------------------------------------
+-- collision functions that apply on lists of vertices
+----------------------------------------------------------------------------------------------------
+
+function collisions.rayIntersection(verts, transform, src_x, src_y, src_z, dir_x, dir_y, dir_z)
+    return findClosest(transform, verts, triangleRay, src_x, src_y, src_z, dir_x, dir_y, dir_z)
 end
 
-function collisions:closestPoint(src_x, src_y, src_z)
-    return findClosest(self, self.verts, trianglePoint, src_x, src_y, src_z)
+function collisions.isPointInside(verts, transform, x, y, z)
+    return findAny(transform, verts, triangleRay, x, y, z, 0, 0, 1)
 end
 
-function collisions:capsuleIntersection(tip_x, tip_y, tip_z, base_x, base_y, base_z, radius)
+function collisions.sphereIntersection(verts, transform, src_x, src_y, src_z, radius)
+    return findClosest(transform, verts, triangleSphere, src_x, src_y, src_z, radius)
+end
+
+function collisions.closestPoint(verts, transform, src_x, src_y, src_z)
+    return findClosest(transform, verts, trianglePoint, src_x, src_y, src_z)
+end
+
+function collisions.capsuleIntersection(verts, transform, tip_x, tip_y, tip_z, base_x, base_y, base_z, radius)
     -- the normal vector coming out the tip of the capsule
     local norm_x, norm_y, norm_z = vectorNormalize(tip_x - base_x, tip_y - base_y, tip_z - base_z)
 
@@ -430,8 +496,8 @@ function collisions:capsuleIntersection(tip_x, tip_y, tip_z, base_x, base_y, bas
     local b_x, b_y, b_z = tip_x - norm_x*radius, tip_y - norm_y*radius, tip_z - norm_z*radius
 
     return findClosest(
-        self,
-        self.verts,
+        transform,
+        verts,
         triangleCapsule,
         tip_x, tip_y, tip_z,
         base_x, base_y, base_z,
@@ -442,6 +508,7 @@ function collisions:capsuleIntersection(tip_x, tip_y, tip_z, base_x, base_y, bas
     )
 end
 
+--[[
 ----------------------------------------------------------------------------------------------------
 -- AABB functions
 ----------------------------------------------------------------------------------------------------
@@ -558,5 +625,6 @@ function collisions:rayIntersectionAABB(src_1, src_2, src_3, dir_1, dir_2, dir_3
     local where_3 = src_3 + dir_3 * tmin
     return tmin, where_1, where_2, where_3
 end
+]]
 
 return collisions

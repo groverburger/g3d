@@ -26,11 +26,6 @@ model.vertexFormat = {
 }
 model.shader = g3d.shader
 
--- model class imports functions from the collisions library
-for key,value in pairs(collisions) do
-    model[key] = value
-end
-
 -- this returns a new instance of the model class
 -- a model must be given a .obj file or equivalent lua table, and a texture
 -- translation, rotation, and scale are all 3d vectors and are all optional
@@ -58,7 +53,6 @@ local function newModel(verts, texture, translation, rotation, scale)
     self.matrix = newMatrix()
     if type(scale) == "number" then scale = {scale, scale, scale} end
     self:setTransform(translation or {0,0,0}, rotation or {0,0,0}, scale or {1,1,1})
-    self:generateAABB()
 
     return self
 end
@@ -204,6 +198,26 @@ if success then
         self.mesh:setTexture(self.texture)
         self.verts = nil
     end
+end
+
+function model:rayIntersection(...)
+    return collisions.rayIntersection(self.verts, self, ...)
+end
+
+function model:isPointInside(...)
+    return collisions.isPointInside(self.verts, self, ...)
+end
+
+function model:sphereIntersection(...)
+    return collisions.sphereIntersection(self.verts, self, ...)
+end
+
+function model:closestPoint(...)
+    return collisions.closestPoint(self.verts, self, ...)
+end
+
+function model:capsuleIntersection(...)
+    return collisions.capsuleIntersection(self.verts, self, ...)
 end
 
 return newModel

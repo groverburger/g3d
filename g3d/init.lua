@@ -49,6 +49,7 @@ g3d = {
 g3d.shader = love.graphics.newShader(g3d.shaderpath)
 g3d.newModel = require(g3d.path .. "/model")
 g3d.camera = require(g3d.path .. "/camera")
+g3d.collisions = require(g3d.path .. "/collisions")
 g3d.camera.updateProjectionMatrix()
 g3d.camera.updateViewMatrix()
 
