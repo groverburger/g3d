@@ -5,33 +5,6 @@ View the original forum post [here](https://love2d.org/forums/viewtopic.php?f=5&
 
 ![pic1](demo.gif)
 
-## Features
-
-- 3D Model rendering
-- .obj file loading
-- Basic first person movement and camera controls
-- Perspective and orthographic projections
-- Basic collision functions
-- Simple, commented, and organized
-
-## Getting Started
-
-1. Download the latest release version.
-2. Add the `g3d` subfolder folder to your project.
-3. Add `g3d = require "g3d"` to the top of your `main.lua` file.
-
-For more information, check out the [g3d wiki](https://github.com/groverburger/g3d/wiki)!
-
-## Games and demos made with g3d
-
-[Hoarder's Horrible House of Stuff](https://alesan99.itch.io/hoarders-horrible-house-of-stuff) by alesan99<br/>
-![Hoarder's Gif](https://img.itch.zone/aW1hZ2UvODY2NDc3LzQ4NjYzMDcuZ2lm/original/byZGOE.gif)
-
-[First Person Test](https://github.com/groverburger/g3d_fps) by groverburger (that's me!)<br/>
-![First Person Test Gif](https://user-images.githubusercontent.com/19754251/108477667-6012f900-7248-11eb-97e9-8fbc03a09a99.gif)
-
-## Demo Code
-
 The entire `main.lua` file for the Earth and Moon demo is under 30 lines, as shown here:
 ```lua
 -- written by groverbuger for g3d
@@ -62,6 +35,35 @@ function love.draw()
     background:draw()
 end
 ```
+
+## Features
+
+- 3D Model rendering
+- .obj file loading
+- Basic first person movement and camera controls
+- Perspective and orthographic projections
+- Basic collision functions
+- Simple, commented, and organized
+- Fully documented, check out the [g3d wiki](https://github.com/groverburger/g3d/wiki)!
+
+## Getting Started
+
+1. Download the latest release version.
+2. Add the `g3d` subfolder folder to your project.
+3. Add `g3d = require "g3d"` to the top of your `main.lua` file.
+
+For more information, check out the [g3d wiki](https://github.com/groverburger/g3d/wiki)!
+
+## Games and demos made with g3d
+
+[Hoarder's Horrible House of Stuff](https://alesan99.itch.io/hoarders-horrible-house-of-stuff) by alesan99<br/>
+![Hoarder's Gif](https://img.itch.zone/aW1hZ2UvODY2NDc3LzQ4NjYzMDcuZ2lm/original/byZGOE.gif)
+
+[Lead Haul](https://hydrogen-maniac.itch.io/lead-haul) by YouDoYouBuddy<br/>
+![image](https://user-images.githubusercontent.com/19754251/134966103-014a1f67-c79f-4bf6-bece-5764d6c22ee5.png)
+
+[First Person Test](https://github.com/groverburger/g3d_fps) by groverburger (that's me!)<br/>
+![First Person Test Gif](https://user-images.githubusercontent.com/19754251/108477667-6012f900-7248-11eb-97e9-8fbc03a09a99.gif)
 
 ## Additional Help and FAQ 
 
