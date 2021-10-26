@@ -38,16 +38,7 @@ end
 -- automatically converts a matrix to a string
 -- for printing to console and debugging
 function matrix:__tostring()
-    local str = "[\n  "
-    for i=1, 16 do
-        str = str .. self[i]
-        if i%4 == 0 and i > 1 then
-            str = str .. (i < 16 and "\n  " or "\n")
-        else
-            str = str .. ", "
-        end
-    end
-    return str .. "]"
+    return ("%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f\n%f\t%f\t%f\t%f"):format(unpack(self))
 end
 
 ----------------------------------------------------------------------------------------------------
@@ -129,8 +120,6 @@ function matrix:setViewMatrix(eye, target, up)
     local z1, z2, z3 = vectorNormalize(eye[1] - target[1], eye[2] - target[2], eye[3] - target[3])
     local x1, x2, x3 = vectorNormalize(vectorCrossProduct(up[1], up[2], up[3], z1, z2, z3))
     local y1, y2, y3 = vectorCrossProduct(z1, z2, z3, x1, x2, x3)
-    --local x1, x2, x3 = vectorNormalize(vectorCrossProduct(z1, z2, z3, up[1], up[2], up[3]))
-    --local y1, y2, y3 = vectorCrossProduct(x1, x2, x3, z1, z2, z3)
 
     self[1],  self[2],  self[3],  self[4]  = x1, x2, x3, -1*vectorDotProduct(x1, x2, x3, eye[1], eye[2], eye[3])
     self[5],  self[6],  self[7],  self[8]  = y1, y2, y3, -1*vectorDotProduct(y1, y2, y3, eye[1], eye[2], eye[3])
