@@ -8,7 +8,7 @@
 
 -- give path of file
 -- returns a lua table representation
-return function (path)
+return function (path, flipU, flipV)
     local positions, faces, uvs, normals, model = {}, {}, {}, {}, {}
 
     -- go line by line through the file
@@ -28,8 +28,14 @@ return function (path)
             table.insert(positions, {tonumber(words[2]), tonumber(words[3]), tonumber(words[4])})
         elseif firstWord == "vt" then
             -- if the first word in this line is a "vt", then this defines a texture coordinate
-
-            table.insert(uvs, {tonumber(words[2]), tonumber(words[3])})
+			
+			-- Blender 2.9+ V axis points UP, whereas LÖVE's Y axis points DOWN
+			-- Not sure if any other software has U axis inverted, but why not add this just in case?
+			local U, V = tonumber(words[2]), tonumber(words[3])			
+			if flipU then U = 1 - U end
+			if flipV then V = 1 - V end
+			
+            table.insert(uvs, {U,V})
         elseif firstWord == "vn" then
             -- if the first word in this line is a "vn", then this defines a vertex normal
 
