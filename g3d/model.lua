@@ -37,7 +37,6 @@ local function newModel(verts, texture, translation, rotation, scale)
     if type(verts) == "string" then
         verts = loadObjFile(verts)
     end
-    assert(verts and type(verts) == "table", "Invalid vertices given to newModel")
 
     -- if texture is a string, use it as a path to an image file
     -- otherwise texture is already an image, so don't bother
