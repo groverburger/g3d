@@ -62,8 +62,11 @@ For more information, check out the [g3d wiki](https://github.com/groverburger/g
 [Lead Haul](https://hydrogen-maniac.itch.io/lead-haul) by YouDoYouBuddy<br/>
 ![image](https://user-images.githubusercontent.com/19754251/134966103-014a1f67-c79f-4bf6-bece-5764d6c22ee5.png)
 
-[First Person Test](https://github.com/groverburger/g3d_fps) by groverburger (that's me!)<br/>
+[First Person Test](https://github.com/groverburger/g3d_fps) by groverburger<br/>
 ![First Person Test Gif](https://user-images.githubusercontent.com/19754251/108477667-6012f900-7248-11eb-97e9-8fbc03a09a99.gif)
+
+[g3d voxel engine](https://github.com/groverburger/g3d_voxel) by groverburger<br />
+![g3d_voxel3](https://user-images.githubusercontent.com/19754251/146161518-7e94510f-5683-4a3c-aaa2-c39d4d23f0bd.png)
 
 ## Additional Help and FAQ 
 
