@@ -91,33 +91,18 @@ function camera.lookInDirection(x,y,z, directionTowards,pitchTowards)
 end
 
 -- recreate the camera's view matrix from its current values
--- and send the matrix to the shader specified, or the default shader
-function camera.updateViewMatrix(shaderGiven)
-    local shader = shaderGiven or g3d.shader
+function camera.updateViewMatrix()
     camera.viewMatrix:setViewMatrix(camera.position, camera.target, camera.up)
-    shader:send("viewMatrix", camera.viewMatrix)
 end
 
 -- recreate the camera's projection matrix from its current values
--- and send the matrix to the shader specified, or the default shader
-function camera.updateProjectionMatrix(shaderGiven)
-    local shader = shaderGiven or g3d.shader
+function camera.updateProjectionMatrix()
     camera.projectionMatrix:setProjectionMatrix(camera.fov, camera.nearClip, camera.farClip, camera.aspectRatio)
-    shader:send("projectionMatrix", camera.projectionMatrix)
 end
 
 -- recreate the camera's orthographic projection matrix from its current values
--- and send the matrix to the shader specified, or the default shader
-function camera.updateOrthographicMatrix(shaderGiven, size)
-    local shader = shaderGiven or g3d.shader
+function camera.updateOrthographicMatrix(size)
     camera.projectionMatrix:setOrthographicMatrix(camera.fov, size or 5, camera.nearClip, camera.farClip, camera.aspectRatio)
-    shader:send("projectionMatrix", camera.projectionMatrix)
-end
-
--- sends the camera's view and projection matrices to the given shader
-function camera.sendMatricesToShader(shader)
-    shader:send("viewMatrix", camera.viewMatrix)
-    shader:send("projectionMatrix", camera.projectionMatrix)
 end
 
 -- simple first person camera movement with WASD

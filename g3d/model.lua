@@ -6,6 +6,7 @@ local newMatrix = require(g3d.path .. "/matrices")
 local loadObjFile = require(g3d.path .. "/objloader")
 local collisions = require(g3d.path .. "/collisions")
 local vectors = require(g3d.path .. "/vectors")
+local camera = require(g3d.path .. "/camera")
 local vectorCrossProduct = vectors.crossProduct
 local vectorNormalize = vectors.normalize
 
@@ -144,6 +145,8 @@ function model:draw(shader)
     local shader = shader or self.shader
     love.graphics.setShader(shader)
     shader:send("modelMatrix", self.matrix)
+    shader:send("viewMatrix", camera.viewMatrix)
+    shader:send("projectionMatrix", camera.projectionMatrix)
     if shader:hasUniform "isCanvasEnabled" then
         shader:send("isCanvasEnabled", love.graphics.getCanvas() ~= nil)
     end
