@@ -42,6 +42,7 @@ end
 - .obj file loading
 - Basic first person movement and camera controls
 - Perspective and orthographic projections
+- Easily create your own custom vertex and fragment shaders
 - Basic collision functions
 - Simple, commented, and organized
 - Fully documented, check out the [g3d wiki](https://github.com/groverburger/g3d/wiki)!
