@@ -8,8 +8,9 @@
 
 -- give path of file
 -- returns a lua table representation
-return function (path)
-    local positions, faces, uvs, normals, model = {}, {}, {}, {}, {}
+return function (path, uFlip, vFlip)
+    local positions, uvs, normals = {}, {}, {}
+    local result = {}
 
     -- go line by line through the file
     for line in love.filesystem.lines(path) do
@@ -29,7 +30,13 @@ return function (path)
         elseif firstWord == "vt" then
             -- if the first word in this line is a "vt", then this defines a texture coordinate
 
-            table.insert(uvs, {tonumber(words[2]), tonumber(words[3])})
+            local u, v = tonumber(words[2]), tonumber(words[3])
+
+            -- optionally flip these texture coordinates
+            if uFlip then u = 1 - u end
+            if vFlip then v = 1 - v end
+
+            table.insert(uvs, {u, v})
         elseif firstWord == "vn" then
             -- if the first word in this line is a "vn", then this defines a vertex normal
 
@@ -39,29 +46,25 @@ return function (path)
             -- a face takes three point definitions
             -- the arguments a point definition takes are vertex, vertex texture, vertex normal in that order
 
-            assert(#words == 4, ("Faces in %s must be triangulated before they can be used in g3d!"):format(path))
-            local face = {v = {}, vt = {}, n = {}}
+            assert(#words == 4, ("Faces in level %s must be triangulated before they can be loaded!"):format(path))
 
             for i=2, #words do
-                local v, vt, n = words[i]:match "(%d+)/(%d+)/(%d+)"
-                table.insert(face.v,  tonumber(v))
-                table.insert(face.vt, tonumber(vt))
-                table.insert(face.n,  tonumber(n))
+                local v, vt, vn = words[i]:match "(%d+)/(%d+)/(%d+)"
+                v, vt, vn = tonumber(v), tonumber(vt), tonumber(vn)
+                local vert = {
+                    positions[v][1],
+                    positions[v][2],
+                    positions[v][3],
+                    uvs[vt][1],
+                    uvs[vt][2],
+                    normals[vn][1],
+                    normals[vn][2],
+                    normals[vn][3],
+                }
+                table.insert(result, vert)
             end
-
-            table.insert(faces, face)
         end
     end
 
-    -- put it all together in the right order
-    for _, face in pairs(faces) do
-        for i=1, 3 do
-            local vert = {unpack(positions[face.v[i]])}
-            for _, uv in ipairs(uvs[face.vt[i]]) do table.insert(vert, uv) end
-            for _, normal in ipairs(normals[face.n[i]]) do table.insert(vert, normal) end
-            table.insert(model, vert)
-        end
-    end
-
-    return model
+    return result
 end
