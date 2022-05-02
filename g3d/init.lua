@@ -3,25 +3,25 @@
 -- MIT license
 
 --[[
-         __       __     
-       /'__`\    /\ \    
-   __ /\_\L\ \   \_\ \   
- /'_ `\/_/_\_<_  /'_` \  
-/\ \L\ \/\ \L\ \/\ \L\ \ 
+         __       __
+       /'__`\    /\ \
+   __ /\_\L\ \   \_\ \
+ /'_ `\/_/_\_<_  /'_` \
+/\ \L\ \/\ \L\ \/\ \L\ \
 \ \____ \ \____/\ \___,_\
  \/___L\ \/___/  \/__,_ /
-   /\____/               
-   \_/__/                
+   /\____/
+   \_/__/
 --]]
 
 g3d = {
-    _VERSION     = "g3d 1.5",
+    _VERSION     = "g3d 1.5.2",
     _DESCRIPTION = "Simple and easy 3D engine for LÖVE.",
     _URL         = "https://github.com/groverburger/g3d",
     _LICENSE     = [[
         MIT License
 
-        Copyright (c) 2021 groverburger
+        Copyright (c) 2022 groverburger
 
         Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal
@@ -50,6 +50,8 @@ g3d.shader = love.graphics.newShader(g3d.shaderpath)
 g3d.newModel = require(g3d.path .. "/model")
 g3d.camera = require(g3d.path .. "/camera")
 g3d.collisions = require(g3d.path .. "/collisions")
+g3d.loadObj = require(g3d.path .. "/objloader")
+g3d.vectors = require(g3d.path .. "/vectors")
 g3d.camera.updateProjectionMatrix()
 g3d.camera.updateViewMatrix()
 
