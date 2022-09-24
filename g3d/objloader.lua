@@ -49,17 +49,17 @@ return function (path, uFlip, vFlip)
             assert(#words == 4, ("Faces in level %s must be triangulated before they can be loaded!"):format(path))
 
             for i=2, #words do
-                local v, vt, vn = words[i]:match "(%d+)/(%d+)/(%d+)"
+                local v, vt, vn = words[i]:match "(%d*)/(%d*)/(%d*)"
                 v, vt, vn = tonumber(v), tonumber(vt), tonumber(vn)
                 local vert = {
-                    positions[v][1],
-                    positions[v][2],
-                    positions[v][3],
-                    uvs[vt][1],
-                    uvs[vt][2],
-                    normals[vn][1],
-                    normals[vn][2],
-                    normals[vn][3],
+                    v and positions[v][1] or 0,
+                    v and positions[v][2] or 0,
+                    v and positions[v][3] or 0,
+                    vt and uvs[vt][1] or 0,
+                    vt and uvs[vt][2] or 0,
+                    vn and normals[vn][1] or 0,
+                    vn and normals[vn][2] or 0,
+                    vn and normals[vn][3] or 0,
                 }
                 table.insert(result, vert)
             end
