@@ -32,7 +32,11 @@ end
 
 function vectors.normalize(x,y,z)
     local mag = math.sqrt(x^2 + y^2 + z^2)
-    return x/mag, y/mag, z/mag
+    if mag ~= 0 then
+        return x/mag, y/mag, z/mag
+    else
+        return 0, 0, 0
+    end
 end
 
 function vectors.magnitude(x,y,z)
