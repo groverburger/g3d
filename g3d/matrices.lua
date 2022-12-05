@@ -2,7 +2,7 @@
 -- september 2021
 -- MIT license
 
-local vectors = require(g3d.path .. "/vectors")
+local vectors = require(g3d.path .. ".vectors")
 local vectorCrossProduct = vectors.crossProduct
 local vectorDotProduct = vectors.dotProduct
 local vectorNormalize = vectors.normalize

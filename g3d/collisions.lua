@@ -2,7 +2,7 @@
 -- september 2021
 -- MIT license
 
-local vectors = require(g3d.path .. "/vectors")
+local vectors = require(g3d.path .. ".vectors")
 local fastSubtract = vectors.subtract
 local vectorAdd = vectors.add
 local vectorCrossProduct = vectors.crossProduct

@@ -2,11 +2,11 @@
 -- september 2021
 -- MIT license
 
-local newMatrix = require(g3d.path .. "/matrices")
-local loadObjFile = require(g3d.path .. "/objloader")
-local collisions = require(g3d.path .. "/collisions")
-local vectors = require(g3d.path .. "/vectors")
-local camera = require(g3d.path .. "/camera")
+local newMatrix = require(g3d.path .. ".matrices")
+local loadObjFile = require(g3d.path .. ".objloader")
+local collisions = require(g3d.path .. ".collisions")
+local vectors = require(g3d.path .. ".vectors")
+local camera = require(g3d.path .. ".camera")
 local vectorCrossProduct = vectors.crossProduct
 local vectorNormalize = vectors.normalize
 

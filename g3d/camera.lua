@@ -2,7 +2,7 @@
 -- september 2021
 -- MIT license
 
-local newMatrix = require(g3d.path .. "/matrices")
+local newMatrix = require(g3d.path .. ".matrices")
 local g3d = g3d -- save a reference to g3d in case the user makes it non-global
 
 ----------------------------------------------------------------------------------------------------
