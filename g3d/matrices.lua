@@ -82,6 +82,41 @@ function matrix:setTransformationMatrix(translation, rotation, scale)
     self[13], self[14], self[15], self[16] = 0, 0, 0, 1
 end
 
+function matrix:getScale()
+    -- does not account for negative scaling
+    local sx = vectorMagnitude(self[1], self[5], self[9])
+    local sy = vectorMagnitude(self[2], self[6], self[10])
+    local sz = vectorMagnitude(self[3], self[7], self[11])
+    return sx, sy, sz
+end
+
+-- transpose of the camera (look at) matrix
+function matrix:lookAtFrom(pos, target, up, orig_scale)
+    self[4]  = pos[1]
+    self[8]  = pos[2]
+    self[12] = pos[3]
+
+    local sx, sy, sz
+
+    if orig_scale then sx, sy, sz = unpack(orig_scale) else sx, sy, sz = self:getScale() end
+
+    -- forward, side, up directions
+    local f_x, f_y, f_z = vectorNormalize(pos[1]-target[1], pos[2]-target[2], pos[3]-target[3])
+    local s_x, s_y, s_z = vectorNormalize(vectorCrossProduct(up[1],up[2],up[3], f_x,f_y,f_z))
+    local u_x, u_y, u_z = vectorCrossProduct(f_x,f_y,f_z, s_x,s_y,s_z)
+
+    self[1], self[2], self[3]   = f_x*sx, s_x*sy, u_x*sz
+    self[5], self[6], self[7]   = f_y*sx, s_y*sy, u_y*sz 
+    self[9], self[10], self[11] = f_z*sx, s_z*sy, u_z*sz 
+end
+
+
+
+------------------------------------------------
+-- camera transformations
+------------------------------------------------
+
+
 -- returns a perspective projection matrix
 -- (things farther away appear smaller)
 -- all arguments are scalars aka normal numbers
