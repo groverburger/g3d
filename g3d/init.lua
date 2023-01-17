@@ -42,7 +42,7 @@ g3d = {
         SOFTWARE.
     ]],
     path = ...,
-    shaderpath = ... .. "/g3d.vert",
+    shaderpath = (...):gsub("%.", "/") .. "/g3d.vert",
 }
 
 -- the shader is what does the heavy lifting, displaying 3D meshes on your 2D monitor
