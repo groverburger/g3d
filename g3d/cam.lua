@@ -135,7 +135,6 @@ end
 
 -- simple first person camera movement with WASD
 -- put this local function in your love.update to use, passing in dt
--- will be removed. in favour of user defined movement. Helpers should be present though such as translateRelative etc
 function camera:firstPersonMovement(dt)
     -- collect inputs
     local moveX, moveY = 0, 0
