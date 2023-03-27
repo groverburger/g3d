@@ -48,12 +48,13 @@ g3d = {
 -- the shader is what does the heavy lifting, displaying 3D meshes on your 2D monitor
 g3d.shader = love.graphics.newShader(g3d.shaderpath)
 g3d.newModel = require(g3d.path .. ".model")
-g3d.camera = require(g3d.path .. ".camera")
+g3d.camera = require(g3d.path .. ".cam")
 g3d.collisions = require(g3d.path .. ".collisions")
 g3d.loadObj = require(g3d.path .. ".objloader")
 g3d.vectors = require(g3d.path .. ".vectors")
-g3d.camera.updateProjectionMatrix()
-g3d.camera.updateViewMatrix()
+
+g3d.camera.current():updateProjectionMatrix()
+g3d.camera.current():updateViewMatrix()
 
 -- so that far polygons don't overlap near polygons
 love.graphics.setDepthMode("lequal", true)
