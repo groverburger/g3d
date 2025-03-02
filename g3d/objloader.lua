@@ -25,8 +25,13 @@ return function (path, uFlip, vFlip)
 
         if firstWord == "v" then
             -- if the first word in this line is a "v", then this defines a vertex's position
+			-- for an unofficial .OBJ format (supported in blender), it can also contain color information
 
-            table.insert(positions, {tonumber(words[2]), tonumber(words[3]), tonumber(words[4])})
+			local t = {}
+			for i=2,#words do
+				t[i-1] = tonumber(words[i])
+			end
+			table.insert(positions, t)
         elseif firstWord == "vt" then
             -- if the first word in this line is a "vt", then this defines a texture coordinate
 
@@ -44,7 +49,7 @@ return function (path, uFlip, vFlip)
 
             -- if the first word in this line is a "f", then this is a face
             -- a face takes three point definitions
-            -- the arguments a point definition takes are vertex, vertex texture, vertex normal in that order
+            -- the arguments a point definition takes are vertex (and color), vertex texture, vertex normal in that order
 
             local vertices = {}
             for i = 2, #words do
@@ -59,6 +64,9 @@ return function (path, uFlip, vFlip)
                     vn and normals[vn][1] or 0,
                     vn and normals[vn][2] or 0,
                     vn and normals[vn][3] or 0,
+					v and positions[v][4],
+					v and positions[v][5],
+					v and positions[v][6],
                 })
             end
 
