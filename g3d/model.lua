@@ -32,11 +32,12 @@ model.shader = g3d.shader
 -- translation, rotation, and scale are all 3d vectors and are all optional
 local function newModel(verts, texture, translation, rotation, scale)
     local self = setmetatable({}, model)
+    local map
 
     -- if verts is a string, use it as a path to a .obj file
     -- otherwise verts is a table, use it as a model defintion
     if type(verts) == "string" then
-        verts = loadObjFile(verts)
+        verts, map = loadObjFile(verts)
     end
 
     -- if texture is a string, use it as a path to an image file
@@ -50,6 +51,9 @@ local function newModel(verts, texture, translation, rotation, scale)
     self.texture = texture
     self.mesh = love.graphics.newMesh(self.vertexFormat, self.verts, "triangles")
     self.mesh:setTexture(self.texture)
+    if map then
+        self.mesh:setVertexMap(map)
+    end
     self.matrix = newMatrix()
     if type(scale) == "number" then scale = {scale, scale, scale} end
     self:setTransform(translation or {0,0,0}, rotation or {0,0,0}, scale or {1,1,1})
