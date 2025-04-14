@@ -97,8 +97,11 @@ function matrix:lookAtFrom(pos, target, up, orig_scale)
     self[12] = pos[3]
 
     local sx, sy, sz
-
-    if orig_scale then sx, sy, sz = unpack(orig_scale) else sx, sy, sz = self:getScale() end
+    if orig_scale then
+        sx, sy, sz = unpack(orig_scale)
+    else
+        sx, sy, sz = self:getScale()
+    end
 
     -- forward, side, up directions
     local f_x, f_y, f_z = vectorNormalize(pos[1]-target[1], pos[2]-target[2], pos[3]-target[3])
@@ -110,12 +113,9 @@ function matrix:lookAtFrom(pos, target, up, orig_scale)
     self[9], self[10], self[11] = f_z*sx, s_z*sy, u_z*sz 
 end
 
-
-
-------------------------------------------------
+----------------------------------------------------------------------------------------------------
 -- camera transformations
-------------------------------------------------
-
+----------------------------------------------------------------------------------------------------
 
 -- returns a perspective projection matrix
 -- (things farther away appear smaller)
