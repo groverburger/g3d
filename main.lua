@@ -8,8 +8,6 @@ local moon = g3d.newModel("assets/sphere.obj", "assets/moon.png", {4,5,0}, nil, 
 local background = g3d.newModel("assets/sphere.obj", "assets/starfield.png", nil, nil, 500)
 local timer = 0
 
-earth:setScale(1, 2, 3)
-
 function love.update(dt)
     timer = timer + dt
     moon:setTranslation(math.cos(timer)*5 + 4, math.sin(timer)*5, 0)
@@ -18,8 +16,6 @@ function love.update(dt)
     if love.keyboard.isDown "escape" then
         love.event.push "quit"
     end
-
-    earth:lookAt(moon.translation, {0,0,1})
 end
 
 function love.draw()
