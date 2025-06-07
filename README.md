@@ -61,7 +61,10 @@ For more information, check out the [g3d wiki](https://github.com/groverburger/g
 ![Hoarder's Gif](https://img.itch.zone/aW1hZ2UvODY2NDc3LzQ4NjYzMDcuZ2lm/original/byZGOE.gif)
 
 [Lead Haul](https://hydrogen-maniac.itch.io/lead-haul) by YouDoYouBuddy<br/>
-![image](https://user-images.githubusercontent.com/19754251/134966103-014a1f67-c79f-4bf6-bece-5764d6c22ee5.png)
+![Lead Haul Screenshot](https://user-images.githubusercontent.com/19754251/134966103-014a1f67-c79f-4bf6-bece-5764d6c22ee5.png)
+
+[Plan Meow](https://sacemakesgame.itch.io/plan-meow) by SaceMakesGame
+![Plan Meow Screenshot](https://github.com/user-attachments/assets/31df1499-8991-4ffc-946d-7a2f0e8cb198)
 
 [First Person Test](https://github.com/groverburger/g3d_fps) by groverburger<br/>
 ![First Person Test Gif](https://user-images.githubusercontent.com/19754251/108477667-6012f900-7248-11eb-97e9-8fbc03a09a99.gif)
