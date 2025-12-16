@@ -1,5 +1,4 @@
 // written by groverbuger for g3d
-// september 2021
 // MIT license
 
 // this vertex shader is what projects 3d vertices in models onto your 2d screen
