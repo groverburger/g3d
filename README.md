@@ -1,32 +1,32 @@
-![g3d_logo](https://user-images.githubusercontent.com/19754251/91235387-502bb980-e6ea-11ea-9d12-74f762f69859.png)
+<img src="https://user-images.githubusercontent.com/19754251/91235387-502bb980-e6ea-11ea-9d12-74f762f69859.png" width="360" alt="g3d">
 
-groverburger's 3D engine (g3d) simplifies [LÖVE](http://love2d.org)'s 3d capabilities to be as simple to use as possible.<br/>
-View the original forum post [here](https://love2d.org/forums/viewtopic.php?f=5&t=86350).
+groverburger's 3D engine (g3d) simplifies [LÖVE](http://love2d.org)'s 3d capabilities to be as simple to use as possible.
 
 ![pic1](demo.gif)
 
-The entire `main.lua` file for the Earth and Moon demo is under 30 lines, as shown here:
+## Getting Started
+
+1. Download the latest release version.
+2. Add the `g3d` folder to your LÖVE project.
+3. Add `local g3d = require "g3d"` to your `main.lua` file.
+
+The entire `main.lua` file for the Earth and Moon demo is under 30 lines:
+
 ```lua
--- written by groverbuger for g3d
--- may 2021
--- MIT license
-
 local g3d = require "g3d"
-local earth = g3d.newModel("assets/sphere.obj", "assets/earth.png", {0,0,4})
-local moon = g3d.newModel("assets/sphere.obj", "assets/moon.png", {5,0,4}, nil, {0.5,0.5,0.5})
-local background = g3d.newModel("assets/sphere.obj", "assets/starfield.png", {0,0,0}, nil, {500,500,500})
+local earth = g3d.newModel("assets/sphere.obj", "assets/earth.png", {4,0,0})
+local moon = g3d.newModel("assets/sphere.obj", "assets/moon.png", {4,5,0}, nil, 0.5)
+local background = g3d.newModel("assets/sphere.obj", "assets/starfield.png", nil, nil, 500)
 local timer = 0
-
-function love.mousemoved(x,y, dx,dy)
-    g3d.camera.firstPersonLook(dx,dy)
-end
 
 function love.update(dt)
     timer = timer + dt
-    moon:setTranslation(math.cos(timer)*5, 0, math.sin(timer)*5 +4)
-    moon:setRotation(0, math.pi - timer, 0)
+    moon:setTranslation(math.cos(timer)*5 + 4, math.sin(timer)*5, 0)
+    moon:setRotation(0, 0, timer - math.pi/2)
     g3d.camera.firstPersonMovement(dt)
-    if love.keyboard.isDown("escape") then love.event.push("quit") end
+    if love.keyboard.isDown "escape" then
+        love.event.push "quit"
+    end
 end
 
 function love.draw()
@@ -34,26 +34,25 @@ function love.draw()
     moon:draw()
     background:draw()
 end
+
+function love.mousemoved(x,y, dx,dy)
+    g3d.camera.firstPersonLook(dx,dy)
+end
 ```
 
 ## Features
 
-- 3D Model rendering
-- .obj file loading
-- Basic first person movement and camera controls
-- Perspective and orthographic projections
-- Easily create your own custom vertex and fragment shaders
-- Basic collision functions
+- Textured 3D model rendering
+- OBJ file loading
+- Perspective and orthographic cameras
+- Custom vertex and fragment shader support
+- Basic first-person movement and camera controls
+- Lightweight collision queries
 - Simple, commented, and organized
-- Fully documented, check out the [g3d wiki](https://github.com/groverburger/g3d/wiki)!
 
-## Getting Started
+## Documentation
 
-1. Download the latest release version.
-2. Add the `g3d` subfolder folder to your project.
-3. Add `g3d = require "g3d"` to the top of your `main.lua` file.
-
-For more information, check out the [g3d wiki](https://github.com/groverburger/g3d/wiki)!
+The [g3d wiki](https://github.com/groverburger/g3d/wiki) explains the camera, models, custom shaders, collisions, and other topics in more detail. The [original forum post](https://love2d.org/forums/viewtopic.php?f=5&t=86350) has more project history and discussion.
 
 ## Games and demos made with g3d
 
@@ -71,7 +70,3 @@ For more information, check out the [g3d wiki](https://github.com/groverburger/g
 
 [g3d voxel engine](https://github.com/groverburger/g3d_voxel) by groverburger<br />
 ![g3d_voxel3](https://user-images.githubusercontent.com/19754251/146161518-7e94510f-5683-4a3c-aaa2-c39d4d23f0bd.png)
-
-## Additional Help and FAQ 
-
-Check out the [g3d wiki](https://github.com/groverburger/g3d/wiki)!
