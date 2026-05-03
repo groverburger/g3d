@@ -156,6 +156,7 @@ end
 -- draw the model
 function model:draw(shader)
     local shader = shader or self.shader
+    local previousShader = love.graphics.getShader()
     love.graphics.setShader(shader)
     shader:send("modelMatrix", self.matrix)
     shader:send("viewMatrix", camera.viewMatrix)
@@ -164,7 +165,7 @@ function model:draw(shader)
         shader:send("isCanvasEnabled", love.graphics.getCanvas() ~= nil)
     end
     love.graphics.draw(self.mesh)
-    love.graphics.setShader()
+    love.graphics.setShader(previousShader)
 end
 
 -- the fallback function if ffi was not loaded
