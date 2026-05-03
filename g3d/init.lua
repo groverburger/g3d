@@ -13,14 +13,14 @@
    \_/__/
 --]]
 
-g3d = {
-    _VERSION     = "g3d 1.5.2",
+local g3d = {
+    _VERSION     = "g3d 1.6.0",
     _DESCRIPTION = "Simple and easy 3D engine for LÖVE.",
     _URL         = "https://github.com/groverburger/g3d",
     _LICENSE     = [[
         MIT License
 
-        Copyright (c) 2022 groverburger
+        Copyright (c) 2026 groverburger
 
         Permission is hereby granted, free of charge, to any person obtaining a copy
         of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,7 @@ g3d = {
     path = ...,
     shaderpath = (...):gsub("%.", "/") .. "/g3d.vert",
 }
+package.loaded[g3d.path] = g3d
 
 -- the shader is what does the heavy lifting, displaying 3D meshes on your 2D monitor
 g3d.shader = love.graphics.newShader(g3d.shaderpath)
@@ -57,7 +58,4 @@ g3d.camera.updateViewMatrix()
 -- so that far polygons don't overlap near polygons
 love.graphics.setDepthMode("lequal", true)
 
--- get rid of g3d from the global namespace and return it instead
-local g3d = g3d
-_G.g3d = nil
 return g3d

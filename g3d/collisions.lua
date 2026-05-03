@@ -1,6 +1,7 @@
 -- written by groverbuger for g3d
 -- MIT license
 
+local g3d = package.loaded[(...):match("^(.*)%.[^.]+$")]
 local vectors = require(g3d.path .. ".vectors")
 local fastSubtract = vectors.subtract
 local vectorAdd = vectors.add

@@ -1,8 +1,8 @@
 -- written by groverbuger for g3d
 -- MIT license
 
+local g3d = package.loaded[(...):match("^(.*)%.[^.]+$")]
 local newMatrix = require(g3d.path .. ".matrices")
-local g3d = g3d -- save a reference to g3d in case the user makes it non-global
 
 ----------------------------------------------------------------------------------------------------
 -- define the camera singleton

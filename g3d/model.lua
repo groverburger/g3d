@@ -1,6 +1,7 @@
 -- written by groverbuger for g3d
 -- MIT license
 
+local g3d = package.loaded[(...):match("^(.*)%.[^.]+$")]
 local newMatrix = require(g3d.path .. ".matrices")
 local loadObjFile = require(g3d.path .. ".objloader")
 local collisions = require(g3d.path .. ".collisions")
