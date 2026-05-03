@@ -47,8 +47,11 @@ return function (path, uFlip, vFlip)
 
             local vertices = {}
             for i = 2, #words do
-                local v, vt, vn = words[i]:match "(%d*)/(%d*)/(%d*)"
+                local v, vt, vn = words[i]:match "^(%-?%d+)/?(%-?%d*)/?(%-?%d*)$"
                 v, vt, vn = tonumber(v), tonumber(vt), tonumber(vn)
+                if not v or v <= 0 or (vt and vt <= 0) or (vn and vn <= 0) then
+                    error("g3d objloader invalid face token: " .. words[i])
+                end
                 table.insert(vertices, {
                     v and positions[v][1] or 0,
                     v and positions[v][2] or 0,
