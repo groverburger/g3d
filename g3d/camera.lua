@@ -99,6 +99,11 @@ function camera.updateProjectionMatrix()
     camera.projectionMatrix:setProjectionMatrix(camera.fov, camera.nearClip, camera.farClip, camera.aspectRatio)
 end
 
+function camera.resize(width, height)
+    camera.aspectRatio = (width or love.graphics.getWidth()) / (height or love.graphics.getHeight())
+    camera.updateProjectionMatrix()
+end
+
 -- recreate the camera's orthographic projection matrix from its current values
 function camera.updateOrthographicMatrix(size)
     camera.projectionMatrix:setOrthographicMatrix(camera.fov, size or 5, camera.nearClip, camera.farClip, camera.aspectRatio)
